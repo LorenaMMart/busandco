@@ -17,4 +17,25 @@ class UsuarioController extends AbstractController
             'path' => 'src/Controller/UsuarioController.php',
         ]);
     }
+
+    #[Route('/lineas', name: 'app_lineas', methods: 'POST')]
+    public function lineas(): JsonResponse {
+        return $this->json( [
+
+        ]);
+    }
+
+    // public function listLineas(EntityManagerInterface $em){
+    //     $lineas = $em->getRepository(Linea::class)->findAll();
+
+    //     foreach($lineas as $linea){
+    //         //recorrer lineas recuperar:
+    //         //nombre linea
+    //         //empresa por id de empresa
+    //         //Direccion por id de sublinea
+
+    //         //setear objeto
+
+    //     }
+    // }
 }
