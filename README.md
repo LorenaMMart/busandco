@@ -15,5 +15,6 @@
     <li>Si hay conflictos en el código se deberá comantar con el resto de miembros antes de resolverlos</li>
     <li>Si no hay conflictos se ejecuta el siguiente comando <b>git push origin desarrollo</b> </li>
   </ul>
-
+<h2>Instalar librerias al clonar proyecto</h2>
+<p>Ejecutar el comando "composer install" una vez clonado el proyecto por primera vez</p>
   
