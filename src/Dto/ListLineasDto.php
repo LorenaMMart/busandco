@@ -2,10 +2,6 @@
 
 namespace App\Dto;
 
-use Doctrine\ORM\EntityManagerInterface;
-
-use App\Entity\Linea;
-
 class ListLineasDto
 {
     private string $nombre;
