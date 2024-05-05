@@ -2,29 +2,30 @@
 
 namespace App\Controller;
 
+use App\Dto\CuerpoLineaDetalleDto;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Serializer\Encoder\XmlEncoder;
-use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Symfony\Component\Serializer\Serializer;
+
 
 
 use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\Linea;
 use App\Dto\ListLineasDto;
+use App\Entity\Sublinea;
+use App\Entity\Parada;
+use App\Utils\TransformDto;
 
 
 #[Route('/api', name: 'api_')]
 class UsuarioController extends AbstractController
 {
-   
-    public function __construct()
+   private $em;
+    public function __construct(EntityManagerInterface $entityM)
     {
-       
+       $this->em = $entityM;
     }
 
     #[Route('/usuario', name: 'app_usuario')]
@@ -37,25 +38,52 @@ class UsuarioController extends AbstractController
     }
 
     #[Route('/lineas', name: 'app_lineas', methods: 'GET')]
-    public function lineas(EntityManagerInterface $em): JsonResponse {
-        $lineas = $em->getRepository(Linea::class)->findAll();
+    public function lineas(): JsonResponse {
+        $lineas = $this->em->getRepository(Linea::class)->findAll();
         if($lineas){
             $dtoList = [];
             foreach($lineas as $linea){
-                $dto = [
-                        'id' => $linea->getId(),
-                        'nombre' => $linea->getNombre(),
-                        'descripcion' => $linea->getDescripcion(),
-                        'empresa' => $linea->getEmpresa()->getNombre(),
-                        'tipo' => $linea->getTipo(),
-                        ];
+                $dto = ListLineasDto::of($linea->getNombre(),
+                                        $linea->getDescripcion(),
+                                        $linea->getEmpresa()->getNombre(),
+                                        $linea->getTipo());
                 array_push($dtoList,$dto);                        
             }
-            return new JsonResponse($dtoList, Response::HTTP_OK);
+            
+            $transform_obj = new TransformDto();
+            $jsonContent = $transform_obj->encoderDto($dtoList);
+            return $this->json($jsonContent);
         }
         else{
             return $this->json(["error" => "Linea no encontrada"], 404);
         } 
     }
+
+    #[Route('/lineadetallec/{idLinea}/{idSubLinea}', name: 'app_lineadetalle_c', methods: 'GET')]
+    public function lineaDetalleCuerpo($idLinea, $idSubLinea): JsonResponse {
+        if($idSubLinea != null && $idLinea != null){
+            $dtoList = [];
+            $sublinea = $this->em->getRepository(Sublinea::class)->find($idSubLinea);
+            if($sublinea){
+                $paradas =  $this->em->getRepository(Parada::class)->findParadasBySublinea($idSubLinea);
+                foreach($paradas as $parada){
+                    $linea = $this->em->getRepository(Linea::class)->findLineasByParada($idLinea, $parada->getId());
+                    $dto = CuerpoLineaDetalleDto::of($parada->getPoblacion()->getNombre(),
+                                        $parada->getNombre(),
+                                        $linea);
+                    array_push($dtoList,$dto);                        
+                    }
+                }
+        $transform_obj = new TransformDto();
+        $jsonContent = $transform_obj->encoderDto($dtoList);
+        return $this->json($jsonContent);              
+        }
+        else{
+            return $this->json(["error" => "Linea no encontrada"], 404);
+        } 
+    }
+
+    
+
 
 }

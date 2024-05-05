@@ -16,6 +16,7 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class SublineasParadasHorariosRepository extends ServiceEntityRepository
 {
+    
     public function __construct(ManagerRegistry $registry)
     {
         parent::__construct($registry, SublineasParadasHorarios::class);
@@ -45,4 +46,5 @@ class SublineasParadasHorariosRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
 }
