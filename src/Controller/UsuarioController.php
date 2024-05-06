@@ -71,7 +71,8 @@ class UsuarioController extends AbstractController
                     $dto = CuerpoLineaDetalleDto::of($parada->getPoblacion()->getNombre(),
                                         $parada->getNombre(),
                                         $linea);
-                    array_push($dtoList,$dto);                        
+                    array_push($dtoList,$dto);  
+                                          
                     }
                 }
         $transform_obj = new TransformDto();
