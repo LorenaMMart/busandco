@@ -60,19 +60,18 @@ class UsuarioController extends AbstractController
     }
 
     #[Route('/lineadetallec/{idLinea}/{idSubLinea}', name: 'app_lineadetalle_c', methods: 'GET')]
-    public function lineaDetalleCuerpo($idLinea, $idSubLinea): JsonResponse {
+    public function lineaDetalleCuerpo($idLinea, $idSubLinea, $direccion): JsonResponse {
         if($idSubLinea != null && $idLinea != null){
             $dtoList = [];
             $sublinea = $this->em->getRepository(Sublinea::class)->find($idSubLinea);
             if($sublinea){
-                $paradas =  $this->em->getRepository(Parada::class)->findParadasBySublinea($idSubLinea);
+                $paradas =  $this->em->getRepository(Parada::class)->findParadasBySublinea($idSubLinea, $direccion);
                 foreach($paradas as $parada){
                     $linea = $this->em->getRepository(Linea::class)->findLineasByParada($idLinea, $parada->getId());
                     $dto = CuerpoLineaDetalleDto::of($parada->getPoblacion()->getNombre(),
                                         $parada->getNombre(),
                                         $linea);
-                    array_push($dtoList,$dto);  
-                                          
+                    array_push($dtoList,$dto);                
                     }
                 }
         $transform_obj = new TransformDto();
