@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Coordenadas;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * @extends ServiceEntityRepository<Coordenadas>
@@ -16,9 +17,11 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class CoordenadasRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $em;
+    public function __construct(ManagerRegistry $registry,EntityManagerInterface $entityM)
     {
         parent::__construct($registry, Coordenadas::class);
+        $this->em = $entityM;
     }
 
     //    /**
@@ -45,4 +48,12 @@ class CoordenadasRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findCoordenadasBySublinea($sublineaId)
+    {
+     $query = $this->em->createQuery("SELECT cor.latitud, cor.longitud FROM App\Entity\Coordenadas cor JOIN cor.sublinea sl WHERE sl.id = ?1");
+     $query->setParameter(1, $sublineaId);
+     return $query->getResult();
+    }
+
 }

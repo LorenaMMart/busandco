@@ -2,12 +2,18 @@
 
 namespace App\Dto;
 
-class ListLineasDto
+use Doctrine\DBAL\Types\BlobType;
+
+
+class CabeceraLineaDto
 {
-    private string $nombre;
-    private string $descripcion;
+    private int $idLinea;
+    private string $nombreLinea;
+    private array $sublineas;
+    private string $direccion;
     private string $empresa;
-    private string $tipo;
+    // private BlobType $logo;
+    private array $coordenadas;
 
 
     public function __construct()
@@ -15,48 +21,87 @@ class ListLineasDto
         
     }
 
-    static function of(string $nombre, string $descripcion, string $empresa, string $tipo): ListLineasDto{
-        $data = new ListLineasDto();
-        $data->setNombre($nombre);
-        $data->setDescripcion($descripcion);
+    static function of(int $idLinea, string $nombreLinea, array $sublineas, string $direccion, string $empresa, array $coordenadas): CabeceraLineaDto{
+        $data = new CabeceraLineaDto();
+        $data->setIdLinea($idLinea);
+        $data->setNombreLinea($nombreLinea);
+        $data->setSublineas($sublineas);
+        $data->setDireccion($direccion);
         $data->setEmpresa($empresa);
-        $data->setTipo($tipo);
+        // $data->setLogo($logo);
+        $data->setCoordenadas($coordenadas);
         return $data;
     }
 
     /**
-     * @return string
+     * @return int
      */
-    public function getNombre(): string
+    public function getIdLinea(): int
     {
-        return $this->nombre;
+        return $this->idLinea;
     }
 
     /**
-     * @param string $nombre
+     * @param int $idLinea
      * @return LineasDto
      */
-    public function setNombre(string $nombre): ListLineasDto
+    public function setIdLinea(string $idLinea): CabeceraLineaDto
     {
-        $this->nombre = $nombre;
+        $this->idLinea = $idLinea;
         return $this;
     }
 
     /**
      * @return string
      */
-    public function getDescripcion(): string
+    public function getNombreLinea(): string
     {
-        return $this->descripcion;
+        return $this->nombreLinea;
     }
 
     /**
-     * @param string $descripcion
+     * @param string $nombreLinea
      * @return LineasDto
      */
-    public function setDescripcion(string $descripcion): ListLineasDto
+    public function setNombreLinea(string $nombreLinea): CabeceraLineaDto
     {
-        $this->descripcion = $descripcion;
+        $this->nombreLinea = $nombreLinea;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getSublineas(): array
+    {
+        return $this->sublineas;
+    }
+
+    /**
+     * @param array $sublinea
+     * @return LineasDto
+     */
+    public function setSublineas(array $sublineas): CabeceraLineaDto
+    {
+        $this->sublineas = $sublineas;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDireccion(): string
+    {
+        return $this->direccion;
+    }
+
+    /**
+     * @param string $direccion
+     * @return LineasDto
+     */
+    public function setDireccion(string $direccion): CabeceraLineaDto
+    {
+        $this->direccion = $direccion;
         return $this;
     }
 
@@ -72,31 +117,47 @@ class ListLineasDto
      * @param string $empresa
      * @return LineasDto
      */
-    public function setEmpresa(string $empresa): ListLineasDto
+    public function setEmpresa(string $empresa): CabeceraLineaDto
     {
         $this->empresa = $empresa;
         return $this;
     }
 
+    // /**
+    //  * @return BlobType
+    //  */
+    // public function getLogo(): BlobType
+    // {
+    //     return $this->logo;
+    // }
+
+    // /**
+    //  * @param BlobType $logo
+    //  * @return LineasDto
+    //  */
+    // public function setLogo(BlobType $logo): CabeceraLineaDto
+    // {
+    //     $this->logo = $logo;
+    //     return $this;
+    // }
+
     /**
-     * @return string
+     * @return array
      */
-    public function getTipo(): string
+    public function getCoordenadas(): array
     {
-        return $this->tipo;
+        return $this->coordenadas;
     }
 
     /**
-     * @param string $tipo
+     * @param array $coordenadas
      * @return LineasDto
      */
-    public function setTipo(string $tipo): ListLineasDto
+    public function setCoordenadas(array $coordenadas): CabeceraLineaDto
     {
-        $this->empresa = $tipo;
+        $this->coordenadas = $coordenadas;
         return $this;
     }
 
-    
-    
 }
 ?>
