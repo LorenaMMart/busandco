@@ -1,4 +1,4 @@
-<h4>Comandos necesarios de GIT</h4>
+<h2>Comandos necesarios de GIT</h2>
 <p>Tenemos una rama principal que será el desarrollo definitivo del proyecto por eso debemos mantenerla lo más depurada posible y sólo incluir código que sea definitivo, para ello, he creado una rama secundaria llamada "desarrollo" sobre la que trabajaremos y haremos cambios</p>
 <p>Para clonar el repositorio la primera vez:</p>
   <ul>
@@ -15,5 +15,6 @@
     <li>Si hay conflictos en el código se deberá comantar con el resto de miembros antes de resolverlos</li>
     <li>Si no hay conflictos se ejecuta el siguiente comando <b>git push origin desarrollo</b> </li>
   </ul>
-
+<h2>Instalar librerias al clonar proyecto</h2>
+<p>Ejecutar el comando "composer install" una vez clonado el proyecto por primera vez</p>
   
