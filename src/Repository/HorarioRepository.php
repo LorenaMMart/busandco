@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Horario;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * @extends ServiceEntityRepository<Horario>
@@ -16,9 +17,11 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class HorarioRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $em;
+    public function __construct(ManagerRegistry $registry, EntityManagerInterface $entityM )
     {
         parent::__construct($registry, Horario::class);
+        $this->em = $entityM;
     }
 
     //    /**
@@ -45,4 +48,12 @@ class HorarioRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findHorariosByParada($idParada)
+    {
+     $query = $this->em->createQuery("SELECT ho.hora, ho.tipo FROM App\Entity\Horario ho JOIN ho.sublineasParadasHorarios sub JOIN sub.parada pa WHERE pa.id = ?1");
+     $query->setParameter(1, $idParada);
+     return $query->getResult();
+    }
+
 }

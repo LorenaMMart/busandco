@@ -16,10 +16,12 @@ use App\Entity\Linea;
 use App\Dto\ListLineasDto;
 use App\Dto\SublineaDto;
 use App\Dto\CabeceraLineaDto;
+use App\Dto\ParadaHorarioDto;
 use App\Entity\Sublinea;
 use App\Entity\Parada;
 use App\Entity\SublineasParadasHorarios;
 use App\Entity\Coordenadas;
+use App\Entity\Horario;
 use App\Utils\TransformDto;
 
 
@@ -84,9 +86,8 @@ class UsuarioController extends AbstractController
 
             $empresa = $linea->getEmpresa();
                 $nombreEmpresa = $empresa->getNombre();
-                $logoEmpresa = $empresa->getLogo(); 
+                //$logoEmpresa = $empresa->getLogo(); 
 
-            //$subLineaParadaHora = $this->em->getRepository(SublineasParadasHorarios::class)->find($idLinea);
             $direccion = $this->em->getRepository(SublineasParadasHorarios::class)->findDireccionIdaBySublinea($idSublinea, $descripcionLinea);
                 
             $coordenadas = $this->em->getRepository(Coordenadas::class)->findCoordenadasBySublinea($idSublinea); 
@@ -120,8 +121,8 @@ class UsuarioController extends AbstractController
                 foreach($paradas as $parada){
                     $linea = $this->em->getRepository(Linea::class)->findLineasByParada($idLinea, $parada->getId());
                     $dto = CuerpoLineaDetalleDto::of($parada->getPoblacion()->getNombre(),
-                                        $parada->getNombre(),
-                                        $linea);
+                                                    $parada->getNombre(),
+                                                    $linea);
                     array_push($dtoList,$dto);                
                     }
                 }
@@ -137,10 +138,14 @@ class UsuarioController extends AbstractController
     #[Route('/paradahorario/{idParada}', name: 'app_parada_ho', methods: 'GET')]
     public function paradaHorario($idParada): JsonResponse{
         if($idParada != null){
-            $dtoList = [];
+            $parada = $this->em->getRepository(Parada::class)->find($idParada);
+            $horarioTipo = $this->em->getRepository(Horario::class)->findHorariosByParada($idParada);
+            $dtoP = ParadaHorarioDto::of($parada->getId(),
+                                        $parada->getNombre(),
+                                        $horarioTipo);
                 
         $transform_obj = new TransformDto();
-        $jsonContent = $transform_obj->encoderDto($dtoList);
+        $jsonContent = $transform_obj->encoderDtoObject($dtoP);
         return $this->json($jsonContent);              
         }
         else{

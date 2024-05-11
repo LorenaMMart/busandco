@@ -6,23 +6,44 @@ use DateTime;
 
 class ParadaHorarioDto
 {
+    private int $idParada;
     private string $nombreParada;
-    private DateTime $horario;
-    private string $tipo;
+    private array $horario;
    
     public function __construct()
     {
         
     }
 
-    static function of(string $nombreParada, DateTime $horario, string $tipo): ParadaHorarioDto
+    static function of(int $idParada, string $nombreParada, array $horario): ParadaHorarioDto
     {
         $data = new ParadaHorarioDto();
+        $data->setIdParada($idParada);
         $data->setNombreParada($nombreParada);
+        for ($i=0; $i < count($horario) ; $i++) { 
+            $horario[$i]['hora']=$horario[$i]['hora']->format('H:i:s');
+        }
         $data->setHorario($horario);
-        $data->setTipo($tipo);
        
         return $data;
+    }
+
+    /**
+     * @return int
+     */
+    public function getIdParada(): int
+    {
+        return $this->idParada;
+    }
+
+    /**
+     * @param string $idParada
+     * @return ParadaHorarioDto
+     */
+    public function setIdParada(int $idParada): ParadaHorarioDto
+    {
+        $this->idParada = $idParada;
+        return $this;
     }
 
     /**
@@ -44,40 +65,23 @@ class ParadaHorarioDto
     }
 
     /**
-     * @return DateTime
+     * @return array
      */
-    public function getHorario(): DateTime
+    public function getHorario(): array
     {
         return $this->horario;
     }
 
     /**
-     * @param DateTime $horario
+     * @param array $horario
      * @return ParadaHorarioDto
      */
-    public function setHorario(DateTime $horario): ParadaHorarioDto
+    public function setHorario(array $horario): ParadaHorarioDto
     {
         $this->horario = $horario;
         return $this;
     }
     
-    /**
-     * @return string $tipo
-     */
-    public function getTipo(): string
-    {
-        return $this->tipo;
-    }
-
-    /**
-     * @param string $tipo
-     * @return ParadaHorarioDto
-     */
-    public function setTipo(string $tipo): ParadaHorarioDto
-    {
-        $this->tipo = $tipo;
-        return $this;
-    }  
     
 }
 ?>
