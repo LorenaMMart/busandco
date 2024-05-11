@@ -47,7 +47,8 @@ class UsuarioController extends AbstractController
         if($lineas){
             $dtoList = [];
             foreach($lineas as $linea){
-                $dto = ListLineasDto::of($linea->getNombre(),
+                $dto = ListLineasDto::of($linea->getId(),
+                                        $linea->getNombre(),
                                         $linea->getDescripcion(),
                                         $linea->getEmpresa()->getNombre(),
                                         $linea->getTipo());
@@ -132,6 +133,22 @@ class UsuarioController extends AbstractController
             return $this->json(["error" => "Linea no encontrada"], 404);
         } 
     }
+
+    #[Route('/paradahorario/{idParada}', name: 'app_parada_ho', methods: 'GET')]
+    public function paradaHorario($idParada): JsonResponse{
+        if($idParada != null){
+            $dtoList = [];
+                
+        $transform_obj = new TransformDto();
+        $jsonContent = $transform_obj->encoderDto($dtoList);
+        return $this->json($jsonContent);              
+        }
+        else{
+            return $this->json(["error" => "Linea no encontrada"], 404);
+        } 
+    }
+
+
 
     
 

@@ -4,6 +4,7 @@ namespace App\Dto;
 
 class ListLineasDto
 {
+    private int $idLinea;
     private string $nombre;
     private string $descripcion;
     private string $empresa;
@@ -15,13 +16,32 @@ class ListLineasDto
         
     }
 
-    static function of(string $nombre, string $descripcion, string $empresa, string $tipo): ListLineasDto{
+    static function of(int $idLinea, string $nombre, string $descripcion, string $empresa, string $tipo): ListLineasDto{
         $data = new ListLineasDto();
+        $data->setIdLinea($idLinea);
         $data->setNombre($nombre);
         $data->setDescripcion($descripcion);
         $data->setEmpresa($empresa);
         $data->setTipo($tipo);
         return $data;
+    }
+
+    /**
+     * @return int
+     */
+    public function getIdLinea(): int
+    {
+        return $this->idLinea;
+    }
+
+    /**
+     * @param int $idLinea
+     * @return LineasDto
+     */
+    public function setIdLinea(int $idLinea): ListLineasDto
+    {
+        $this->idLinea = $idLinea;
+        return $this;
     }
 
     /**
@@ -92,7 +112,7 @@ class ListLineasDto
      */
     public function setTipo(string $tipo): ListLineasDto
     {
-        $this->empresa = $tipo;
+        $this->tipo = $tipo;
         return $this;
     }
 
