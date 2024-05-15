@@ -56,4 +56,13 @@ class ParadaRepository extends ServiceEntityRepository
      $query->setParameter(2, $direccion);
      return $query->getResult();
     }
+
+    public function findCoordenadasbyParada($idParada)
+    {
+     $query = $this->em->createQuery("SELECT DISTINCT pa.latitud, pa.longitud FROM App\Entity\Parada pa WHERE pa.id = ?1");
+     $query->setParameter(1, $idParada);
+     return $query->getResult();
+    }
+
+    
 }

@@ -35,8 +35,7 @@ class UsuarioController extends AbstractController
     }
 
     #[Route('/usuario', name: 'app_usuario')]
-    public function index(): JsonResponse
-    {
+    public function index(): JsonResponse{
         return $this->json([
             'message' => 'Welcome to your new controller!',
             'path' => 'src/Controller/UsuarioController.php',
@@ -66,17 +65,19 @@ class UsuarioController extends AbstractController
         } 
     }
 
-    #[Route('/lineadetalleca/{idLinea}/{idSublinea}', name: 'app_lineadetalle_ca', methods: 'GET')]
-    public function lineaDetalleCabecera($idLinea, $idSublinea): JsonResponse {
+    #[Route('/lineadetalleca/{idLinea}', name: 'app_lineadetalle_ca', methods: 'GET')]
+    public function lineaDetalleCabecera($idLinea): JsonResponse {
         if($idLinea != null){
 
             $dtoSubline = [];
+            $idSublinea = 0;
 
             $linea = $this->em->getRepository(Linea::class)->find($idLinea);
                 $nombreLinea = $linea->getNombre();
                 $descripcionLinea = $linea->getDescripcion();
 
             $sublineas = $linea->getSublineas();
+            $idSublinea = $sublineas[0]->getId();
                 foreach($sublineas as $sublinea){
                     $dtoL = SublineaDto::of($sublinea->getId(),
                     $sublinea->getNombre());
@@ -120,9 +121,11 @@ class UsuarioController extends AbstractController
                 $paradas =  $this->em->getRepository(Parada::class)->findParadasBySublinea($idSubLinea,$direccion);
                 foreach($paradas as $parada){
                     $linea = $this->em->getRepository(Linea::class)->findLineasByParada($idLinea, $parada->getId());
+                    $coordenadas = $this->em->getRepository(Parada::class)->findCoordenadasbyParada($idSubLinea);
                     $dto = CuerpoLineaDetalleDto::of($parada->getPoblacion()->getNombre(),
                                                     $parada->getNombre(),
-                                                    $linea);
+                                                    $linea,
+                                                    $coordenadas);
                     array_push($dtoList,$dto);                
                     }
                 }

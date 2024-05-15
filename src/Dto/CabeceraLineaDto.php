@@ -133,7 +133,7 @@ class CabeceraLineaDto
 
     // /**
     //  * @param BlobType $logo
-    //  * @return LineasDto
+    //  * @return CabeceraLineaDto
     //  */
     // public function setLogo(BlobType $logo): CabeceraLineaDto
     // {
@@ -151,7 +151,7 @@ class CabeceraLineaDto
 
     /**
      * @param array $coordenadas
-     * @return LineasDto
+     * @return CabeceraLineaDto
      */
     public function setCoordenadas(array $coordenadas): CabeceraLineaDto
     {
