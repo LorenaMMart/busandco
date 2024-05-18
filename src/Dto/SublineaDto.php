@@ -31,7 +31,7 @@ class SublineaDto
 
     /**
      * @param string $nombre
-     * @return LineasDto
+     * @return SublineaDto
      */
     public function setNombre(string $nombre): SublineaDto
     {
@@ -49,13 +49,12 @@ class SublineaDto
 
     /**
      * @param string $id
-     * @return LineasDto
+     * @return SublineaDto
      */
     public function setId(int $id): SublineaDto
     {
         $this->id = $id;
         return $this;
-    }  
-    
+    }    
 }
 ?>

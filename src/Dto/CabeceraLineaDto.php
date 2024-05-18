@@ -2,17 +2,14 @@
 
 namespace App\Dto;
 
-use Doctrine\DBAL\Types\BlobType;
-
-
 class CabeceraLineaDto
 {
     private int $idLinea;
     private string $nombreLinea;
     private array $sublineas;
-    private string $direccion;
+    private array $direccion;
     private string $empresa;
-    // private BlobType $logo;
+    private string $logo;
     private array $coordenadas;
 
 
@@ -21,14 +18,14 @@ class CabeceraLineaDto
         
     }
 
-    static function of(int $idLinea, string $nombreLinea, array $sublineas, string $direccion, string $empresa, array $coordenadas): CabeceraLineaDto{
+    static function of(int $idLinea, string $nombreLinea, array $sublineas, array $direccion, string $empresa, string $logo, array $coordenadas): CabeceraLineaDto{
         $data = new CabeceraLineaDto();
         $data->setIdLinea($idLinea);
         $data->setNombreLinea($nombreLinea);
         $data->setSublineas($sublineas);
         $data->setDireccion($direccion);
         $data->setEmpresa($empresa);
-        // $data->setLogo($logo);
+        $data->setLogo($logo);
         $data->setCoordenadas($coordenadas);
         return $data;
     }
@@ -88,9 +85,9 @@ class CabeceraLineaDto
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getDireccion(): string
+    public function getDireccion(): array
     {
         return $this->direccion;
     }
@@ -99,7 +96,7 @@ class CabeceraLineaDto
      * @param string $direccion
      * @return LineasDto
      */
-    public function setDireccion(string $direccion): CabeceraLineaDto
+    public function setDireccion(array $direccion): CabeceraLineaDto
     {
         $this->direccion = $direccion;
         return $this;
@@ -123,23 +120,23 @@ class CabeceraLineaDto
         return $this;
     }
 
-    // /**
-    //  * @return BlobType
-    //  */
-    // public function getLogo(): BlobType
-    // {
-    //     return $this->logo;
-    // }
+    /**
+     * @return string
+     */
+    public function getLogo(): string
+    {
+        return $this->logo;
+    }
 
-    // /**
-    //  * @param BlobType $logo
-    //  * @return CabeceraLineaDto
-    //  */
-    // public function setLogo(BlobType $logo): CabeceraLineaDto
-    // {
-    //     $this->logo = $logo;
-    //     return $this;
-    // }
+    /**
+     * @param string $logo
+     * @return CabeceraLineaDto
+     */
+    public function setLogo(string $logo): CabeceraLineaDto
+    {
+        $this->logo = $logo;
+        return $this;
+    }
 
     /**
      * @return array

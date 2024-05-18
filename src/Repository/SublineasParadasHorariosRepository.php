@@ -49,20 +49,11 @@ class SublineasParadasHorariosRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    public function findDireccionIdaBySublinea($sublineaId,$descripcion)
+    public function findDireccionesBySublinea($sublineaId)
     {
-     $query = $this->em->createQuery("SELECT DISTINCT sub.direccion FROM App\Entity\SublineasParadasHorarios sub JOIN sub.sublinea sl WHERE sl.id = ?1 AND sub.direccion = ?2");
+     $query = $this->em->createQuery("SELECT DISTINCT sub.direccion FROM App\Entity\SublineasParadasHorarios sub JOIN sub.sublinea sl WHERE sl.id = ?1");
      $query->setParameter(1, $sublineaId);
-     $query->setParameter(2, $descripcion);
-     return $query->getResult()[0]['direccion'];
-    }
-
-    public function findDireccionVueltaBySublinea($sublineaId,$descripcion)
-    {
-     $query = $this->em->createQuery("SELECT DISTINCT sub.direccion FROM App\Entity\SublineasParadasHorarios sub JOIN sub.sublinea sl WHERE sl.id = ?1 AND sub.direccion <> ?2");
-     $query->setParameter(1, $sublineaId);
-     $query->setParameter(2, $descripcion);
-     return $query->getResult()[0]['direccion'];
+     return $query->getResult();
     }
 
 }

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Dto\BusquedaOrigenDestinoDto;
 use App\Dto\CuerpoLineaDetalleDto;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -14,15 +15,17 @@ use Doctrine\ORM\EntityManagerInterface;
 
 use App\Entity\Linea;
 use App\Dto\ListLineasDto;
-use App\Dto\SublineaDto;
 use App\Dto\CabeceraLineaDto;
 use App\Dto\ParadaHorarioDto;
+use App\Dto\SublineaDto;
 use App\Entity\Sublinea;
 use App\Entity\Parada;
 use App\Entity\SublineasParadasHorarios;
 use App\Entity\Coordenadas;
 use App\Entity\Horario;
+use App\Entity\Empresa;
 use App\Utils\TransformDto;
+
 
 
 #[Route('/api', name: 'api_')]
@@ -40,6 +43,28 @@ class UsuarioController extends AbstractController
             'message' => 'Welcome to your new controller!',
             'path' => 'src/Controller/UsuarioController.php',
         ]);
+    }
+
+    #[Route('/busquedorusuario', name: 'app_busqueda_usuario')]
+    public function busquedaOrigenDestino(): JsonResponse{
+        $dtoList = [];
+        $paradas = $this->em->getRepository(Parada::class)->findAll();
+        $empresas = $this->em->getRepository(Empresa::class)->findAll();
+        if($paradas && $empresas){
+            foreach($paradas as $parada){
+                foreach($empresas as $empresa){
+                    $dto = BusquedaOrigenDestinoDto::of($parada,
+                                                        $empresa);
+                    array_push($dtoList,$dto);                                    
+                }
+            $transform_obj = new TransformDto();
+            $jsonContent = $transform_obj->encoderDto($dtoList);
+            return $this->json($jsonContent);
+            }
+        }
+        else{
+            return $this->json(["error" => "Búsqueda sin resultados"], 404);
+        }  
     }
 
     #[Route('/lineas', name: 'app_lineas', methods: 'GET')]
@@ -67,14 +92,13 @@ class UsuarioController extends AbstractController
 
     #[Route('/lineadetalleca/{idLinea}', name: 'app_lineadetalle_ca', methods: 'GET')]
     public function lineaDetalleCabecera($idLinea): JsonResponse {
-        if($idLinea != null){
+        $linea = $this->em->getRepository(Linea::class)->find($idLinea);
+        if($idLinea && $idLinea != null && $linea){
 
             $dtoSubline = [];
             $idSublinea = 0;
 
-            $linea = $this->em->getRepository(Linea::class)->find($idLinea);
                 $nombreLinea = $linea->getNombre();
-                $descripcionLinea = $linea->getDescripcion();
 
             $sublineas = $linea->getSublineas();
             $idSublinea = $sublineas[0]->getId();
@@ -87,9 +111,14 @@ class UsuarioController extends AbstractController
 
             $empresa = $linea->getEmpresa();
                 $nombreEmpresa = $empresa->getNombre();
-                //$logoEmpresa = $empresa->getLogo(); 
-
-            $direccion = $this->em->getRepository(SublineasParadasHorarios::class)->findDireccionIdaBySublinea($idSublinea, $descripcionLinea);
+                $logoEmpresa = $empresa->getLogo();
+            
+            //Recupero todas las direcciones de la sublinea, para pasarlas al frontend, en el método cuerpo se le para la dirección seleccionada por request    
+            $direcciones = $this->em->getRepository(SublineasParadasHorarios::class)->findDireccionesBySublinea($idSublinea);
+            $direccionS = [];
+            if(count($direcciones) != 0){
+                $direccionS = $direcciones;  
+            }
                 
             $coordenadas = $this->em->getRepository(Coordenadas::class)->findCoordenadasBySublinea($idSublinea); 
             
@@ -97,11 +126,11 @@ class UsuarioController extends AbstractController
                     $idLinea,
                     $nombreLinea,
                     $dtoSubline,
-                    $direccion,
+                    $direccionS,
                     $nombreEmpresa,
+                    base64_encode($logoEmpresa .''),
                     $coordenadas);
  
-
             $transform_obj = new TransformDto();
             $jsonContent = $transform_obj->encoderDtoObject($dto);
             return $this->json($jsonContent);              
@@ -114,24 +143,28 @@ class UsuarioController extends AbstractController
     #[Route('/lineadetallecu/{idLinea}/{idSubLinea}', name: 'app_lineadetalle_c', methods: 'GET')]
     public function lineaDetalleCuerpo(Request $request ,$idLinea, $idSubLinea): JsonResponse{
         $direccion = $request->query->get('direccion');
-        if($idSubLinea != null && $idLinea != null){
+        $sublinea = $this->em->getRepository(Sublinea::class)->find($idSubLinea);
+        if($idSubLinea != null && $idLinea != null && $idSubLinea){
             $dtoList = [];
-            $sublinea = $this->em->getRepository(Sublinea::class)->find($idSubLinea);
-            if($sublinea){
-                $paradas =  $this->em->getRepository(Parada::class)->findParadasBySublinea($idSubLinea,$direccion);
+            $paradas =  $this->em->getRepository(Parada::class)->findParadasBySublinea($idSubLinea,$direccion);
+            if($sublinea && $paradas){
                 foreach($paradas as $parada){
                     $linea = $this->em->getRepository(Linea::class)->findLineasByParada($idLinea, $parada->getId());
-                    $coordenadas = $this->em->getRepository(Parada::class)->findCoordenadasbyParada($idSubLinea);
+                    $coordenadas = $this->em->getRepository(Parada::class)->findCoordenadasbyParada($parada->getId());
                     $dto = CuerpoLineaDetalleDto::of($parada->getPoblacion()->getNombre(),
                                                     $parada->getNombre(),
+                                                    $parada->getId(),
                                                     $linea,
                                                     $coordenadas);
                     array_push($dtoList,$dto);                
                     }
-                }
-        $transform_obj = new TransformDto();
-        $jsonContent = $transform_obj->encoderDto($dtoList);
-        return $this->json($jsonContent);              
+                $transform_obj = new TransformDto();
+                $jsonContent = $transform_obj->encoderDto($dtoList);
+                return $this->json($jsonContent);  
+            }
+            else{
+                return $this->json(["error" => "Sublinea no encontrada"], 404);
+            }                  
         }
         else{
             return $this->json(["error" => "Linea no encontrada"], 404);
@@ -140,21 +173,28 @@ class UsuarioController extends AbstractController
 
     #[Route('/paradahorario/{idParada}', name: 'app_parada_ho', methods: 'GET')]
     public function paradaHorario($idParada): JsonResponse{
-        if($idParada != null){
-            $parada = $this->em->getRepository(Parada::class)->find($idParada);
+        $parada = $this->em->getRepository(Parada::class)->find($idParada);
+        if($idParada != null && $parada){
             $horarioTipo = $this->em->getRepository(Horario::class)->findHorariosByParada($idParada);
-            $dtoP = ParadaHorarioDto::of($parada->getId(),
+            if($horarioTipo){
+                $dtoP = ParadaHorarioDto::of($parada->getId(),
                                         $parada->getNombre(),
                                         $horarioTipo);
                 
-        $transform_obj = new TransformDto();
-        $jsonContent = $transform_obj->encoderDtoObject($dtoP);
-        return $this->json($jsonContent);              
+                $transform_obj = new TransformDto();
+                $jsonContent = $transform_obj->encoderDtoObject($dtoP);
+                return $this->json($jsonContent);    
+            }
+            else{
+                return $this->json(["error" => "Horario no encontrado"], 404);
+            }           
         }
         else{
-            return $this->json(["error" => "Linea no encontrada"], 404);
+            return $this->json(["error" => "Parada no encontrada"], 404);
         } 
     }
+
+
 
 
 

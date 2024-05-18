@@ -6,6 +6,7 @@ class CuerpoLineaDetalleDto
 {
     private string $poblacion;
     private string $parada;
+    private int $idParada;
     private array $coordenadas;
     private array $enlaces;
 
@@ -15,10 +16,11 @@ class CuerpoLineaDetalleDto
         
     }
 
-    static function of(string $poblacion, string $parada, array $enlaces, array $coordenadas): CuerpoLineaDetalleDto{
+    static function of(string $poblacion, string $parada,int $idParada, array $enlaces, array $coordenadas): CuerpoLineaDetalleDto{
         $data = new CuerpoLineaDetalleDto();
         $data->setPoblacion($poblacion);
         $data->setParada($parada);
+        $data->setIdParada($idParada);
         $data->setEnlaces($enlaces);
         $data->setCoordenadas($coordenadas);
         return $data;
@@ -61,6 +63,24 @@ class CuerpoLineaDetalleDto
     }
 
     /**
+     * @return int
+     */
+    public function getIdParada(): int
+    {
+        return $this->idParada;
+    }
+
+    /**
+     * @param int $idPrada
+     * @return CuerpoLineaDetalleDto
+     */
+    public function setIdParada(string $idParada): CuerpoLineaDetalleDto
+    {
+        $this->idParada = $idParada;
+        return $this;
+    }
+
+    /**
      * @return array
      */
     public function getEnlaces(): array
@@ -94,9 +114,6 @@ class CuerpoLineaDetalleDto
     {
         $this->coordenadas = $coordenadas;
         return $this;
-    }
-    
-    
-    
+    }  
 }
 ?>

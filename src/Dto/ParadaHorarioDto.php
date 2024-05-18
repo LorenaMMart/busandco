@@ -21,7 +21,7 @@ class ParadaHorarioDto
         $data->setIdParada($idParada);
         $data->setNombreParada($nombreParada);
         for ($i=0; $i < count($horario) ; $i++) { 
-            $horario[$i]['hora']=$horario[$i]['hora']->format('H:i:s');
+            $horario[$i]['hora']=$horario[$i]['hora']->format('H:i');
         }
         $data->setHorario($horario);
        
@@ -80,8 +80,6 @@ class ParadaHorarioDto
     {
         $this->horario = $horario;
         return $this;
-    }
-    
-    
+    }  
 }
 ?>
