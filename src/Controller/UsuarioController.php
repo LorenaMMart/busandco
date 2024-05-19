@@ -144,17 +144,18 @@ class UsuarioController extends AbstractController
     public function lineaDetalleCuerpo(Request $request ,$idLinea, $idSubLinea): JsonResponse{
         $direccion = $request->query->get('direccion');
         $sublinea = $this->em->getRepository(Sublinea::class)->find($idSubLinea);
-        if($idSubLinea != null && $idLinea != null && $idSubLinea){
+        $linea = $this->em->getRepository(Linea::class)->find($idLinea);
+        if($idSubLinea != null && $idLinea != null && $idSubLinea && $linea){
             $dtoList = [];
             $paradas =  $this->em->getRepository(Parada::class)->findParadasBySublinea($idSubLinea,$direccion);
             if($sublinea && $paradas){
                 foreach($paradas as $parada){
-                    $linea = $this->em->getRepository(Linea::class)->findLineasByParada($idLinea, $parada->getId());
+                    $enlace = $this->em->getRepository(Linea::class)->findLineasByParada($linea->getId(), $parada->getId());
                     $coordenadas = $this->em->getRepository(Parada::class)->findCoordenadasbyParada($parada->getId());
                     $dto = CuerpoLineaDetalleDto::of($parada->getPoblacion()->getNombre(),
                                                     $parada->getNombre(),
                                                     $parada->getId(),
-                                                    $linea,
+                                                    $enlace,
                                                     $coordenadas);
                     array_push($dtoList,$dto);                
                     }
@@ -171,11 +172,24 @@ class UsuarioController extends AbstractController
         } 
     }
 
-    #[Route('/paradahorario/{idParada}', name: 'app_parada_ho', methods: 'GET')]
-    public function paradaHorario($idParada): JsonResponse{
+    #[Route('/paradahorario/{idSublinea}/{idParada}', name: 'app_parada_ho', methods: 'GET')]
+    public function paradaHorario(Request $request,$idSublinea,$idParada): JsonResponse{
+        $direccion= "";
+        $direccionRequest = $request->query->get('direccion');
+        $sublinea = $this->em->getRepository(Sublinea::class)->find($idSublinea);
+        $direcciones = $this->em->getRepository(SublineasParadasHorarios::class)->findDireccionesBySublinea($sublinea->getId());
+        foreach($direcciones as $direccionBd){
+            if($direccionBd['direccion'] == $direccionRequest){
+                $direccion = $direccionBd['direccion'];
+                break;
+            }
+            else{
+                return $this->json(["error" => "Direccion no válida"], 404);
+            }
+        }
         $parada = $this->em->getRepository(Parada::class)->find($idParada);
-        if($idParada != null && $parada){
-            $horarioTipo = $this->em->getRepository(Horario::class)->findHorariosByParada($idParada);
+        if($idParada != null && $parada && $sublinea){
+            $horarioTipo = $this->em->getRepository(Horario::class)->findHorariosByParada($sublinea->getId(),$parada->getId(), $direccion);
             if($horarioTipo){
                 $dtoP = ParadaHorarioDto::of($parada->getId(),
                                         $parada->getNombre(),
