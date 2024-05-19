@@ -51,7 +51,7 @@ class LineaRepository extends ServiceEntityRepository
 
     public function findLineasByParada($lineaId,$paradaId)
     {
-     $query = $this->em->createQuery("SELECT DISTINCT li.nombre FROM App\Entity\Linea li JOIN li.sublineas sl JOIN sl.sublineasParadasHorarios sub JOIN sub.parada p WHERE p.id = ?1 AND li.id <> ?2");
+     $query = $this->em->createQuery("SELECT DISTINCT li.nombre, li.id FROM App\Entity\Linea li JOIN li.sublineas sl JOIN sl.sublineasParadasHorarios sub JOIN sub.parada p WHERE p.id = ?1 AND li.id <> ?2");
      $query->setParameter(1, $paradaId);
      $query->setParameter(2, $lineaId);
      return $query->getResult();
