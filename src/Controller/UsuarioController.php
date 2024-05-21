@@ -18,6 +18,8 @@ use App\Dto\ListLineasDto;
 use App\Dto\CabeceraLineaDto;
 use App\Dto\ParadaHorarioDto;
 use App\Dto\SublineaDto;
+use App\Dto\ParadaDto;
+use App\Dto\EmpresaDto;
 use App\Entity\Sublinea;
 use App\Entity\Parada;
 use App\Entity\SublineasParadasHorarios;
@@ -45,22 +47,30 @@ class UsuarioController extends AbstractController
         ]);
     }
 
-    #[Route('/busquedorusuario', name: 'app_busqueda_usuario')]
+    #[Route('/busquedarusuario', name: 'app_busqueda_usuario')]
     public function busquedaOrigenDestino(): JsonResponse{
-        $dtoList = [];
+        
         $paradas = $this->em->getRepository(Parada::class)->findAll();
         $empresas = $this->em->getRepository(Empresa::class)->findAll();
         if($paradas && $empresas){
+            $dtoListParada = [];
+            $dtoListEmpresa = [];
             foreach($paradas as $parada){
-                foreach($empresas as $empresa){
-                    $dto = BusquedaOrigenDestinoDto::of($parada,
-                                                        $empresa);
-                    array_push($dtoList,$dto);                                    
-                }
-            $transform_obj = new TransformDto();
-            $jsonContent = $transform_obj->encoderDto($dtoList);
-            return $this->json($jsonContent);
+
+                $dtoParada = ParadaDto::of($parada->getId(),$parada->getNombre(), $parada->getLatitud(), $parada->getLongitud());
+                array_push($dtoListParada, $dtoParada);
             }
+            foreach($empresas as $empresa){
+                $dtoEmpresa = EmpresaDto::of($empresa->getId(), $empresa->getNombre());
+                array_push($dtoListEmpresa, $dtoEmpresa);                                    
+            }
+
+        $dto = BusquedaOrigenDestinoDto::of($dtoListParada,
+                                            $dtoListEmpresa);
+            
+        $transform_obj = new TransformDto();
+        $jsonContent = $transform_obj->encoderDtoObject($dto);
+        return $this->json($jsonContent);
         }
         else{
             return $this->json(["error" => "Búsqueda sin resultados"], 404);
@@ -178,15 +188,20 @@ class UsuarioController extends AbstractController
         $direccionRequest = $request->query->get('direccion');
         $sublinea = $this->em->getRepository(Sublinea::class)->find($idSublinea);
         $direcciones = $this->em->getRepository(SublineasParadasHorarios::class)->findDireccionesBySublinea($sublinea->getId());
-        foreach($direcciones as $direccionBd){
-            if($direccionBd['direccion'] == $direccionRequest){
-                $direccion = $direccionBd['direccion'];
-                break;
+
+        if($direccionRequest){
+            foreach($direcciones as $direccionBd){
+                if($direccionBd['direccion'] == $direccionRequest){
+                    $direccion = $direccionBd['direccion'];
+                    break;
+                }
             }
-            else{
+            if($direccion == ""){ return $this->json(["error" => "Direccion no válida"], 404);}
+        } 
+        else{
                 return $this->json(["error" => "Direccion no válida"], 404);
-            }
         }
+        
         $parada = $this->em->getRepository(Parada::class)->find($idParada);
         if($idParada != null && $parada && $sublinea){
             $horarioTipo = $this->em->getRepository(Horario::class)->findHorariosByParada($sublinea->getId(),$parada->getId(), $direccion);
@@ -207,6 +222,8 @@ class UsuarioController extends AbstractController
             return $this->json(["error" => "Parada no encontrada"], 404);
         } 
     }
+
+    
 
 
 

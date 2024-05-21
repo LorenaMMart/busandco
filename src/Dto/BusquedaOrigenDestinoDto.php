@@ -4,15 +4,15 @@ namespace App\Dto;
 
 class BusquedaOrigenDestinoDto
 {
-    private object $paradas;
-    private object $empresas;
+    private array $paradas;
+    private array $empresas;
    
     public function __construct()
     {
         
     }
 
-    static function of(object $paradas, object $empresas): BusquedaOrigenDestinoDto
+    static function of(array $paradas, array $empresas): BusquedaOrigenDestinoDto
     {
         $data = new BusquedaOrigenDestinoDto();
         $data->setParadas($paradas);
@@ -21,40 +21,40 @@ class BusquedaOrigenDestinoDto
     }
 
     /**
-     * @return object
+     * @return array
      */
-    public function getParadas(): object
+    public function getParadas(): array
     {
         return $this->paradas;
     }
 
     /**
-     * @param object $paradas
+     * @param array $paradas
      * @return BusquedaOrigenDestinoDto
      *
      */
-    public function setParadas(object $paradas): BusquedaOrigenDestinoDto
+    public function setParadas(array $paradas): BusquedaOrigenDestinoDto
     {
-        $this->$paradas = $paradas;
+        $this->paradas = $paradas;
         return $this;
     }
 
     /**
-     * @return object
+     * @return array
      */
-    public function getEmpresas(): object
+    public function getEmpresas(): array
     {
         return $this->empresas;
     }
 
     /**
-     * @param object $empresas
+     * @param array $empresas
      * @return BusquedaOrigenDestinoDto
      *
      */
-    public function setEmpresas(object $Empresas): BusquedaOrigenDestinoDto
+    public function setEmpresas(array $empresas): BusquedaOrigenDestinoDto
     {
-        $this->empresas = $Empresas;
+        $this->empresas = $empresas;
         return $this;
     }    
 }
