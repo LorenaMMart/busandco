@@ -19,6 +19,7 @@ use App\Dto\CabeceraLineaDto;
 use App\Dto\ParadaHorarioDto;
 use App\Dto\SublineaDto;
 use App\Dto\ParadaDto;
+use App\Dto\EmpresaReduDto;
 use App\Dto\EmpresaDto;
 use App\Entity\Sublinea;
 use App\Entity\Parada;
@@ -61,7 +62,7 @@ class UsuarioController extends AbstractController
                 array_push($dtoListParada, $dtoParada);
             }
             foreach($empresas as $empresa){
-                $dtoEmpresa = EmpresaDto::of($empresa->getId(), $empresa->getNombre());
+                $dtoEmpresa = EmpresaReduDto::of($empresa->getId(), $empresa->getNombre());
                 array_push($dtoListEmpresa, $dtoEmpresa);                                    
             }
 
@@ -220,6 +221,31 @@ class UsuarioController extends AbstractController
         }
         else{
             return $this->json(["error" => "Parada no encontrada"], 404);
+        } 
+    }
+
+    #[Route('/contacto', name: 'app_contacto', methods: 'GET')]
+    public function contacto(): JsonResponse {
+        $empresas = $this->em->getRepository(Empresa::class)->findAll();
+        if($empresas){
+            $dtoList = [];
+            foreach($empresas as $empresa){
+                $dto = EmpresaDto::of($empresa->getId(),
+                                        $empresa->getNombre(),
+                                        $empresa->getDireccion(),
+                                        $empresa->getTelefono(),
+                                        $empresa->getEmail(),
+                                        $empresa->getWeb(),
+                                        base64_encode($empresa->getLogo() . ''));
+                array_push($dtoList,$dto);                        
+            }
+            
+            $transform_obj = new TransformDto();
+            $jsonContent = $transform_obj->encoderDto($dtoList);
+            return $this->json($jsonContent);
+        }
+        else{
+            return $this->json(["error" => "No existen empresas"], 404);
         } 
     }
 
