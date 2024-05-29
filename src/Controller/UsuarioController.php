@@ -30,8 +30,7 @@ use App\Entity\Empresa;
 use App\Utils\TransformDto;
 
 
-
-#[Route('/api', name: 'api_')]
+#[Route('/usuario', name: 'usuario_')]
 class UsuarioController extends AbstractController
 {
    private $em;
@@ -43,7 +42,7 @@ class UsuarioController extends AbstractController
     #[Route('/usuario', name: 'app_usuario')]
     public function index(): JsonResponse{
         return $this->json([
-            'message' => 'Welcome to your new controller!',
+            'message' => 'Server status OK!',
             'path' => 'src/Controller/UsuarioController.php',
         ]);
     }
@@ -57,8 +56,7 @@ class UsuarioController extends AbstractController
             $dtoListParada = [];
             $dtoListEmpresa = [];
             foreach($paradas as $parada){
-
-                $dtoParada = ParadaDto::of($parada->getId(),$parada->getNombre(), $parada->getLatitud(), $parada->getLongitud());
+                $dtoParada = ParadaDto::of($parada->getId(),$parada->getNombre(), $parada->getLatitud(), $parada->getLongitud(), $parada->getPoblacion()->getNombre());
                 array_push($dtoListParada, $dtoParada);
             }
             foreach($empresas as $empresa){
