@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Linea;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * @extends ServiceEntityRepository<Linea>
@@ -16,9 +17,11 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class LineaRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $em;
+    public function __construct(ManagerRegistry $registry, EntityManagerInterface $entityM)
     {
         parent::__construct($registry, Linea::class);
+        $this->em = $entityM;
     }
 
     //    /**
@@ -45,4 +48,12 @@ class LineaRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findLineasByParada($lineaId,$paradaId)
+    {
+     $query = $this->em->createQuery("SELECT DISTINCT li.nombre, li.id FROM App\Entity\Linea li JOIN li.sublineas sl JOIN sl.sublineasParadasHorarios sub JOIN sub.parada p WHERE p.id = ?1 AND li.id <> ?2");
+     $query->setParameter(1, $paradaId);
+     $query->setParameter(2, $lineaId);
+     return $query->getResult();
+    }
 }

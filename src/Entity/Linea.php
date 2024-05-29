@@ -31,6 +31,9 @@ class Linea
     #[ORM\OneToMany(targetEntity: Sublinea::class, mappedBy: 'linea')]
     private Collection $sublineas;
 
+    #[ORM\Column(length: 50)]
+    private ?string $tipo = null;
+
     public function __construct()
     {
         $this->sublineas = new ArrayCollection();
@@ -103,6 +106,18 @@ class Linea
                 $sublinea->setLinea(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getTipo(): ?string
+    {
+        return $this->tipo;
+    }
+
+    public function setTipo(string $tipo): static
+    {
+        $this->tipo = $tipo;
 
         return $this;
     }

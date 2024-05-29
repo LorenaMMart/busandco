@@ -34,10 +34,17 @@ class Sublinea
     #[ORM\OneToMany(targetEntity: IncidenciasSublineas::class, mappedBy: 'sublinea')]
     private Collection $incidenciasSublineas;
 
+    /**
+     * @var Collection<int, Coordenadas>
+     */
+    #[ORM\OneToMany(targetEntity: Coordenadas::class, mappedBy: 'sublinea')]
+    private Collection $coordenadas;
+
     public function __construct()
     {
         $this->sublineasParadasHorarios = new ArrayCollection();
         $this->incidenciasSublineas = new ArrayCollection();
+        $this->coordenadas = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -123,6 +130,36 @@ class Sublinea
             // set the owning side to null (unless already changed)
             if ($incidenciasSublinea->getSublinea() === $this) {
                 $incidenciasSublinea->setSublinea(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, Coordenadas>
+     */
+    public function getCoordenadas(): Collection
+    {
+        return $this->coordenadas;
+    }
+
+    public function addCoordenada(Coordenadas $coordenada): static
+    {
+        if (!$this->coordenadas->contains($coordenada)) {
+            $this->coordenadas->add($coordenada);
+            $coordenada->setSublinea($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCoordenada(Coordenadas $coordenada): static
+    {
+        if ($this->coordenadas->removeElement($coordenada)) {
+            // set the owning side to null (unless already changed)
+            if ($coordenada->getSublinea() === $this) {
+                $coordenada->setSublinea(null);
             }
         }
 
