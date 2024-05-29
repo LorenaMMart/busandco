@@ -8,19 +8,22 @@ class ParadaDto
     private string $nombre;
     private float $latitud;
     private float $longitud;
+    private string $poblacion;
    
     public function __construct()
     {
         
     }
 
-    static function of(int $id,string $nombre, float $latitud, float $longitud): ParadaDto
+    static function of(int $id,string $nombre, float $latitud, float $longitud, string $poblacion): ParadaDto
     {
         $data = new ParadaDto();
         $data->setId($id);
         $data->setNombre($nombre);
         $data->setLatitud($latitud);
         $data->setLongitud($longitud);
+        $data->setLongitud($longitud);
+        $data->setPoblacion($poblacion);
        
         return $data;
     }
@@ -100,5 +103,25 @@ class ParadaDto
         $this->longitud = $longitud;
         return $this;
     }   
+
+   /**
+     * @return spring
+     */
+    public function getPoblacion()
+    {
+        return $this->poblacion;
+    }
+
+   /**
+     * @param string $poblacion
+     * @return ParadaDto
+     *
+     */
+    public function setPoblacion($poblacion)
+    {
+        $this->poblacion = $poblacion;
+
+        return $this;
+    }
 }
 ?>
