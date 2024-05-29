@@ -2,11 +2,11 @@
 
 namespace App\Entity;
 
-use App\Repository\RecorridoRepository;
+use App\Repository\CoordenadasRepository;
 use Doctrine\ORM\Mapping as ORM;
 
-#[ORM\Entity(repositoryClass: RecorridoRepository::class)]
-class Recorrido
+#[ORM\Entity(repositoryClass: CoordenadasRepository::class)]
+class Coordenadas
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -22,7 +22,7 @@ class Recorrido
     #[ORM\Column]
     private ?int $orden = null;
 
-    #[ORM\OneToOne(inversedBy: 'recorrido', cascade: ['persist', 'remove'])]
+    #[ORM\ManyToOne(inversedBy: 'coordenadas')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Sublinea $sublinea = null;
 
@@ -72,7 +72,7 @@ class Recorrido
         return $this->sublinea;
     }
 
-    public function setSublinea(Sublinea $sublinea): static
+    public function setSublinea(?Sublinea $sublinea): static
     {
         $this->sublinea = $sublinea;
 
