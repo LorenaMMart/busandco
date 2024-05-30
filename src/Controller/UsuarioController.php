@@ -47,7 +47,7 @@ class UsuarioController extends AbstractController
         ]);
     }
 
-    #[Route('/busquedarusuario', name: 'app_busqueda_usuario')]
+    #[Route('/busqueda', name: 'app_busqueda')]
     public function busquedaOrigenDestino(): JsonResponse{
         
         $paradas = $this->em->getRepository(Parada::class)->findAll();
