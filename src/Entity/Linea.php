@@ -34,6 +34,9 @@ class Linea
     #[ORM\Column(length: 50)]
     private ?string $tipo = null;
 
+    #[ORM\Column(nullable : true)]
+    private ?bool $activa = null;
+
     public function __construct()
     {
         $this->sublineas = new ArrayCollection();
@@ -118,6 +121,18 @@ class Linea
     public function setTipo(string $tipo): static
     {
         $this->tipo = $tipo;
+
+        return $this;
+    }
+
+    public function isActiva(): ?bool
+    {
+        return $this->activa;
+    }
+
+    public function setActiva(bool $activa): static
+    {
+        $this->activa = $activa;
 
         return $this;
     }

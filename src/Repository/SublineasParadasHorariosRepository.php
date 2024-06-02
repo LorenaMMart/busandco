@@ -56,4 +56,11 @@ class SublineasParadasHorariosRepository extends ServiceEntityRepository
      return $query->getResult();
     }
 
+    public function findDirOrdByParada($paradaId)
+    {
+     $query = $this->em->createQuery("SELECT sub.direccion, sub.orden FROM App\Entity\SublineasParadasHorarios sub JOIN sub.parada pa WHERE pa.id = ?1");
+     $query->setParameter(1, $paradaId);
+     return $query->getResult();
+    }
+
 }

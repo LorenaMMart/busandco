@@ -2,18 +2,24 @@
 
 namespace App\Controller;
 
-use App\Dto\BusquedaOrigenDestinoDto;
-use App\Dto\CuerpoLineaDetalleDto;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 
-
-
 use Doctrine\ORM\EntityManagerInterface;
+use App\Utils\TransformDto;
 
 use App\Entity\Linea;
+use App\Entity\Sublinea;
+use App\Entity\Parada;
+use App\Entity\SublineasParadasHorarios;
+use App\Entity\Coordenadas;
+use App\Entity\Horario;
+use App\Entity\Empresa;
+use App\Entity\Noticia;
+use App\Entity\Incidencia;
+
 use App\Dto\ListLineasDto;
 use App\Dto\CabeceraLineaDto;
 use App\Dto\ParadaHorarioDto;
@@ -21,14 +27,13 @@ use App\Dto\SublineaDto;
 use App\Dto\ParadaDto;
 use App\Dto\EmpresaReduDto;
 use App\Dto\EmpresaDto;
-use App\Entity\Sublinea;
-use App\Entity\Parada;
-use App\Entity\SublineasParadasHorarios;
-use App\Entity\Coordenadas;
-use App\Entity\Horario;
-use App\Entity\Empresa;
-use App\Utils\TransformDto;
-
+use App\Dto\BusquedaOrigenDestinoDto;
+use App\Dto\CuerpoLineaDetalleDto;
+use App\Dto\IncidenciasDto;
+use App\Dto\NoticiaDto;
+use App\Dto\SubParHorDto;
+use App\Dto\CuerpoOrigenDestinoDto;
+use DateTime;
 
 #[Route('/usuario', name: 'usuario_')]
 class UsuarioController extends AbstractController
@@ -74,6 +79,86 @@ class UsuarioController extends AbstractController
         else{
             return $this->json(["error" => "Búsqueda sin resultados"], 404);
         }  
+    }
+
+    #[Route('/origenDestino', name: 'app_origenDestino')]
+    public function cuerpoOrigenDestino(Request $request): JsonResponse{
+        //Recuperasmos los valores de la request
+        $origen = $request->query->get('origen');
+        $destino = $request->query->get('destino');
+        
+        //Declaramos los arrays que contendrán los DTOs
+        $dtoLineas = [];
+        $dtoSublineas = [];
+        $dtoSubParHorarios = [];
+        $dtoParHorarios = [];
+        $dtoList = [];
+
+        //Obtenemos de la BBDD los objetos parada Origen y Parada Destino y los incluimos en un array
+
+        $origenDestinoList= [];
+        $pOrigen = $this->em->getRepository(Parada::class)->find($origen);
+        $pDestino = $this->em->getRepository(Parada::class)->find($destino);
+
+        array_push($origenDestinoList, $pOrigen);
+        array_push($origenDestinoList, $pDestino);
+
+        //Recorremos array de sublineas que incluyen las paradas de Origen y/o Destino
+        $sublineasBusqueda = $this->em->getRepository(Sublinea::class)->findSublineasByParadas($pOrigen, $pDestino);
+        if($sublineasBusqueda){
+            foreach($sublineasBusqueda as $sublineaBusqueda){
+                //Generamos Dto con datos de Lineas
+                $dtoLinea = ListLineasDto::of($sublineaBusqueda->getLinea()->getId(),
+                                        $sublineaBusqueda->getLinea()->getNombre(),
+                                        $sublineaBusqueda->getLinea()->getDescripcion(),
+                                        $sublineaBusqueda->getLinea()->getEmpresa()->getNombre(),
+                                        $sublineaBusqueda->getLinea()->getTipo());
+                    array_push($dtoLineas,$dtoLinea);
+                //Generamos Dto con Datos de Sublinea
+                $dtoSublinea = SublineaDto::of($sublineaBusqueda->getId(),
+                                        $sublineaBusqueda->getNombre());
+    
+                    array_push($dtoSublineas, $dtoSublinea);            
+            }
+
+        }else{
+            return $this->json(["error" => "No se han encontrado Sublineas"], 404);
+        }
+
+        //Recorremos el array de Origen y Destino
+        foreach($origenDestinoList as $origenDestino){
+            //Guaradamos todos los horarios disponibles de las paradas para todas las lineas, sublinas y direcciones
+            $horariosParada = $this->em->getRepository(Horario::class)->findHorariosByParada($origenDestino->getId());
+
+            //Generamos el dto con Datos de las Paradas 
+            $dtoParHorario = ParadaHorarioDto::of($origenDestino->getId(),
+                                                $origenDestino->getNombre(),
+                                                $origenDestino->getPoblacion()->getNombre(),
+                                                $horariosParada);
+                    
+                    array_push($dtoParHorarios, $dtoParHorario);
+            //Creamos una variable que almacena las direcciones y orden de las paradas        
+            $ordenDires = $this->em->getRepository(SublineasParadasHorarios::class)->findDirOrdByParada($origenDestino->getId());
+            
+            //Generamos el dto con Datos de SublineasParadasHorarios, direccion y orden
+            foreach($ordenDires as $ordenDire ){
+                $dtoSubParHorario = SubParHorDto::of($ordenDire['orden'],
+                                                $ordenDire['direccion'],
+                                                $origenDestino->getId()
+                                                );
+
+                array_push($dtoSubParHorarios, $dtoSubParHorario);
+            }   
+        }
+        //Generamos un nuevo dto que retorna un objeto compuesto por los dtos anteriores
+        $dtoList = CuerpoOrigenDestinoDto::of($dtoLineas,
+                                            $dtoSublineas,
+                                            $dtoParHorarios,
+                                            $dtoSubParHorarios);
+        $transform_obj = new TransformDto();
+        $jsonContent = $transform_obj->encoderDtoObject($dtoList);
+        return $this->json($jsonContent);                                    
+                            
     }
 
     #[Route('/lineas', name: 'app_lineas', methods: 'GET')]
@@ -203,10 +288,11 @@ class UsuarioController extends AbstractController
         
         $parada = $this->em->getRepository(Parada::class)->find($idParada);
         if($idParada != null && $parada && $sublinea){
-            $horarioTipo = $this->em->getRepository(Horario::class)->findHorariosByParada($sublinea->getId(),$parada->getId(), $direccion);
+            $horarioTipo = $this->em->getRepository(Horario::class)->findHorariosByParadaSublineaDireccion($sublinea->getId(),$parada->getId(), $direccion);
             if($horarioTipo){
                 $dtoP = ParadaHorarioDto::of($parada->getId(),
                                         $parada->getNombre(),
+                                        $parada->getPoblacion()->getNombre(),
                                         $horarioTipo);
                 
                 $transform_obj = new TransformDto();
@@ -219,6 +305,61 @@ class UsuarioController extends AbstractController
         }
         else{
             return $this->json(["error" => "Parada no encontrada"], 404);
+        } 
+    }
+
+    #[Route('/noticias', name: 'app_noticias', methods: 'GET')]
+    public function noticias(): JsonResponse {
+        $noticias = $this->em->getRepository(Noticia::class)->findAll();
+        if($noticias){
+            $dtoList = [];
+            foreach($noticias as $noticia){
+                $dto = NoticiaDto::of($noticia->getId(),
+                                        $noticia->getNombre(),
+                                        $noticia->getDescripcion(),
+                                        $noticia->getCuerpo(),
+                                        $noticia->getFecha());
+
+                array_push($dtoList,$dto);                        
+            }
+            
+            $transform_obj = new TransformDto();
+            $jsonContent = $transform_obj->encoderDto($dtoList);
+            return $this->json($jsonContent);
+        }
+        else{
+            return $this->json(["error" => "No existen noticias"], 404);
+        } 
+    }
+
+    #[Route('/incidencias', name: 'app_incidencias', methods: 'GET')]
+    public function incidencias(): JsonResponse {
+        $incidencias = $this->em->getRepository(Incidencia::class)->findAll();
+        if($incidencias){
+            $dtoList = [];
+            foreach($incidencias as $incidencia){
+                if($incidencia->isEstado() == true){
+                    $lineasInc = $this->em->getRepository(Linea::class)->findLineaByIncidencia($incidencia->getId());
+                    $dto = IncidenciasDto::of($incidencia->getId(),
+                                            $incidencia->getNombre(),
+                                            $incidencia->getDescripcion(),
+                                            $incidencia->getFecha()->format('d-m-Y'),
+                                            $lineasInc
+                                            );
+
+                    array_push($dtoList,$dto);   
+                }                          
+            }
+            if(count($dtoList) == 0){
+                return $this->json(["error" => "No existen Incidencias Activas"], 404);
+            }
+
+            $transform_obj = new TransformDto();
+            $jsonContent = $transform_obj->encoderDto($dtoList);
+            return $this->json($jsonContent);
+        }
+        else{
+            return $this->json(["error" => "No existen Incidencias"], 404);
         } 
     }
 
@@ -246,14 +387,4 @@ class UsuarioController extends AbstractController
             return $this->json(["error" => "No existen empresas"], 404);
         } 
     }
-
-    
-
-
-
-
-
-    
-
-
 }

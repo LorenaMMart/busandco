@@ -2,11 +2,10 @@
 
 namespace App\Dto;
 
-class CuerpoOrigenDestino
+class CuerpoOrigenDestinoDto
 {
     private array $lineasCO;
-    private array $sublinasCO;
-    private array $paradasCO;
+    private array $sublineasCO;
     private array $horarioParadaCO;
     private array $subParHorCO;
 
@@ -15,11 +14,10 @@ class CuerpoOrigenDestino
         
     }
     
-    static function of(array $lineasCO, array $sublinasCO, array $paradasCO, array $horarioParadaCO, array $subParHorCO): CuerpoOrigenDestino{
-        $data = new CuerpoOrigenDestino();
+    static function of(array $lineasCO, array $sublineasCO, array $horarioParadaCO, array $subParHorCO): CuerpoOrigenDestinoDto{
+        $data = new CuerpoOrigenDestinoDto();
         $data->setLineasCO($lineasCO);
-        $data->setSublinasCO($sublinasCO);
-        $data->setParadasCO($paradasCO);
+        $data->setSublinasCO($sublineasCO);
         $data->setHorarioParadaCO($horarioParadaCO);
         $data->setSubParHorCO($subParHorCO);
         return $data;
@@ -35,9 +33,9 @@ class CuerpoOrigenDestino
 
    /**
      * @param array $lineasCO
-     * @return CuerpoOrigenDestino
+     * @return CuerpoOrigenDestinoDto
      */
-    public function setLineasCO($lineasCO)
+    public function setLineasCO($lineasCO): CuerpoOrigenDestinoDto
     {
         $this->lineasCO = $lineasCO;
 
@@ -49,38 +47,20 @@ class CuerpoOrigenDestino
      */ 
     public function getSublinasCO()
     {
-        return $this->sublinasCO;
+        return $this->sublineasCO;
     }
 
     /**
      * @param array $sublinasCO
-     * @return CuerpoOrigenDestino
+     * @return CuerpoOrigenDestinoDto
      */
-    public function setSublinasCO($sublinasCO)
+    public function setSublinasCO($sublineasCO): CuerpoOrigenDestinoDto
     {
-        $this->sublinasCO = $sublinasCO;
+        $this->sublineasCO = $sublineasCO;
 
         return $this;
     }
 
-    /**
-     * @return array
-     */ 
-    public function getParadasCO()
-    {
-        return $this->paradasCO;
-    }
-
-    /**
-     * @param array $paradasCO
-     * @return CuerpoOrigenDestino
-     */
-    public function setParadasCO($paradasCO)
-    {
-        $this->paradasCO = $paradasCO;
-
-        return $this;
-    }
 
     /**
      * @return array
@@ -92,9 +72,9 @@ class CuerpoOrigenDestino
 
     /**
      * @param array $horarioParadaCO
-     * @return CuerpoOrigenDestino
+     * @return CuerpoOrigenDestinoDto
      */
-    public function setHorarioParadaCO($horarioParadaCO)
+    public function setHorarioParadaCO($horarioParadaCO): CuerpoOrigenDestinoDto
     {
         $this->horarioParadaCO = $horarioParadaCO;
 
@@ -111,9 +91,9 @@ class CuerpoOrigenDestino
 
     /**
      * @param array $subParHorCO
-     * @return CuerpoOrigenDestino
+     * @return CuerpoOrigenDestinoDto
      */
-    public function setSubParHorCO($subParHorCO)
+    public function setSubParHorCO($subParHorCO): CuerpoOrigenDestinoDto
     {
         $this->subParHorCO = $subParHorCO;
 

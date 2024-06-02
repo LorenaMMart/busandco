@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\IncidenciaRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\BooleanType;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -25,7 +26,7 @@ class Incidencia
     #[ORM\Column(type: Types::DATETIME_MUTABLE)]
     private ?\DateTimeInterface $fecha = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable : true)]
     private ?bool $estado = null;
 
     /**
@@ -85,7 +86,7 @@ class Incidencia
         return $this->estado;
     }
 
-    public function setEstado(bool $estado): static
+    public function setEstado(BooleanType $estado): static
     {
         $this->estado = $estado;
 

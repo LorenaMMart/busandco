@@ -8,6 +8,7 @@ class ParadaHorarioDto
 {
     private int $idParada;
     private string $nombreParada;
+    private string $poblacionParada;
     private array $horario;
    
     public function __construct()
@@ -15,11 +16,12 @@ class ParadaHorarioDto
         
     }
 
-    static function of(int $idParada, string $nombreParada, array $horario): ParadaHorarioDto
+    static function of(int $idParada, string $nombreParada, string $paradaPoblacion, array $horario): ParadaHorarioDto
     {
         $data = new ParadaHorarioDto();
         $data->setIdParada($idParada);
         $data->setNombreParada($nombreParada);
+        $data->setPoblacionParada($paradaPoblacion);
         for ($i=0; $i < count($horario) ; $i++) { 
             $horario[$i]['hora']=$horario[$i]['hora']->format('H:i');
         }
@@ -81,5 +83,24 @@ class ParadaHorarioDto
         $this->horario = $horario;
         return $this;
     }  
+
+    /**
+     * @return string
+     */ 
+    public function getPoblacionParada()
+    {
+        return $this->poblacionParada;
+    }
+
+    /**
+     * @param string poblacionParada
+     * @return ParadaHorarioDto
+     */
+    public function setPoblacionParada($poblacionParada): ParadaHorarioDto
+    {
+        $this->poblacionParada = $poblacionParada;
+
+        return $this;
+    }
 }
 ?>

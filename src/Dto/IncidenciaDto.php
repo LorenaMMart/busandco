@@ -2,29 +2,29 @@
 
 namespace App\Dto;
 
-use DateTime;
 
 class IncidenciasDto
 {
     private int $id;
     private string $nombre;
     private string $descripcion;
-    private DateTime $fecha;
-    private bool $estado;
+    private string $fecha;
+    private array $lineas;
   
     public function __construct()
     {
+
         
     }
 
-    static function of(int $id, string $nombre, string $descripcion, DateTime $fecha, bool $estado): IncidenciasDto
+    static function of(int $id, string $nombre, string $descripcion, string $fecha, array $lineas): IncidenciasDto
     {
         $data = new IncidenciasDto();
         $data->setId($id);
         $data->setNombre($nombre);
         $data->setDescripcion($descripcion);
         $data->setFecha($fecha);
-        $data->setEstado($estado);
+        $data->setLineas($lineas);
        
         return $data;
     }
@@ -87,15 +87,15 @@ class IncidenciasDto
     }
 
     /**
-     * @return DateTime
+     * @return string
      */ 
-    public function getFecha(): DateTime
+    public function getFecha(): string
     {
         return $this->fecha;
     }
 
     /**
-     * @param DateTime $fecha
+     * @param string $fecha
      * @return IncidenciasDto
      *
      */
@@ -107,21 +107,21 @@ class IncidenciasDto
     }
 
     /**
-     * @return bool
-     */
-    public function getEstado(): bool
+     * @return array
+     */ 
+    public function getLineas()
     {
-        return $this->estado;
+        return $this->lineas;
     }
 
-     /**
-     * @param bool $estado
+    /**
+     * @param array $linea
      * @return IncidenciasDto
      *
      */
-    public function setEstado($estado): IncidenciasDto
+    public function setLineas($lineas) : IncidenciasDto
     {
-        $this->estado = $estado;
+        $this->lineas = $lineas;
 
         return $this;
     }
