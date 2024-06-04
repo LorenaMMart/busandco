@@ -31,9 +31,10 @@ use App\Dto\BusquedaOrigenDestinoDto;
 use App\Dto\CuerpoLineaDetalleDto;
 use App\Dto\IncidenciasDto;
 use App\Dto\NoticiaDto;
-use App\Dto\SubParHorDto;
 use App\Dto\CuerpoOrigenDestinoDto;
-use DateTime;
+
+use App\Dto\COParadasDto;
+use App\Dto\CODireccionesDto;
 
 #[Route('/usuario', name: 'usuario_')]
 class UsuarioController extends AbstractController
@@ -88,76 +89,86 @@ class UsuarioController extends AbstractController
         $destino = $request->query->get('destino');
         
         //Declaramos los arrays que contendrán los DTOs
-        $dtoLineas = [];
-        $dtoSublineas = [];
-        $dtoSubParHorarios = [];
-        $dtoParHorarios = [];
+        $dtoDirecciones = [];
+        $dtoParadas = [];
         $dtoList = [];
 
-        //Obtenemos de la BBDD los objetos parada Origen y Parada Destino y los incluimos en un array
+        //Obtenemos de la BBDD los objetos parada Origen y Parada Destino
 
-        $origenDestinoList= [];
         $pOrigen = $this->em->getRepository(Parada::class)->find($origen);
         $pDestino = $this->em->getRepository(Parada::class)->find($destino);
-
-        array_push($origenDestinoList, $pOrigen);
-        array_push($origenDestinoList, $pDestino);
 
         //Recorremos array de sublineas que incluyen las paradas de Origen y/o Destino
         $sublineasBusqueda = $this->em->getRepository(Sublinea::class)->findSublineasByParadas($pOrigen, $pDestino);
         if($sublineasBusqueda){
+
             foreach($sublineasBusqueda as $sublineaBusqueda){
-                //Generamos Dto con datos de Lineas
-                $dtoLinea = ListLineasDto::of($sublineaBusqueda->getLinea()->getId(),
-                                        $sublineaBusqueda->getLinea()->getNombre(),
-                                        $sublineaBusqueda->getLinea()->getDescripcion(),
-                                        $sublineaBusqueda->getLinea()->getEmpresa()->getNombre(),
-                                        $sublineaBusqueda->getLinea()->getTipo());
-                    array_push($dtoLineas,$dtoLinea);
-                //Generamos Dto con Datos de Sublinea
-                $dtoSublinea = SublineaDto::of($sublineaBusqueda->getId(),
-                                        $sublineaBusqueda->getNombre());
-    
-                    array_push($dtoSublineas, $dtoSublinea);            
+                //Recuperamos las direcciones de la sublinea
+                $direccionesSublinea = $this->em->getRepository(SublineasParadasHorarios::class)->findDireccionesBySublinea($sublineaBusqueda->getId());
+                
+                //Recorrecomos dichas direcciones y recuperamos las paradas de cada direccione
+                foreach($direccionesSublinea as $direccionSublinea){
+                    if($direccionSublinea && count($direccionSublinea)>0){
+
+                        $paradasDireccion = $this->em->getRepository(Parada::class)->findParadasByDireccion($direccionSublinea['direccion']);
+                    
+                        //Recorremos las paradas y recuperamos los Horarios y el orden
+                        foreach($paradasDireccion as $paradaDireccion){
+                            if($paradaDireccion){
+                                $horariosParada = $this->em->getRepository(Horario::class)->findHorariosByParada($paradaDireccion->getId());
+                                $ordenParada = $this->em->getRepository(SublineasParadasHorarios::class)->findOrdenByParadaDireccion($paradaDireccion->getId(), $direccionSublinea);
+                                if(count($ordenParada) == 0){
+                                    return $this->json(["error" => "No se han encontrado Datos"], 404);
+                                }else{
+                                        //Generamos el dto con Datos de las Paradas 
+                                        $dtoParada = COParadasDto::of($paradaDireccion->getId(),
+                                        $paradaDireccion->getNombre(),
+                                        $paradaDireccion->getPoblacion()->getNombre(),
+                                        $ordenParada[0]['orden'],
+                                        $horariosParada);
+                                        array_push($dtoParadas, $dtoParada);
+
+                                        //Generamos el dto de direcciones
+                                        $dtoDireccion = CODireccionesDto::of($direccionSublinea['direccion'],
+                                                                            $dtoParadas);
+                                        array_push($dtoDirecciones, $dtoDireccion);
+
+                                        //Generamos el dto de Sublineas
+                                        $linea = $sublineaBusqueda->getLinea();
+                                        $idLinea = $linea->getId();
+                                        $nombreLinea = $linea->getNombre();
+                                        $empresa = $linea->getEmpresa()->getNombre();
+                                        $dtoCuerpoOrigenDestino = CuerpoOrigenDestinoDto::of($idLinea,
+                                                                                            $nombreLinea,
+                                                                                            $empresa,
+                                                                                            $sublineaBusqueda->getId(),
+                                                                                            $sublineaBusqueda->getNombre(),
+                                                                                            $dtoDirecciones);
+                                        array_push($dtoList, $dtoCuerpoOrigenDestino);
+
+                                      
+                                    }
+                            }
+                            else{
+                                return $this->json(["error" => "No se han encontrado Paradas"], 404);
+                            }   
+                        } 
+
+                    }
+                    else{
+                        return $this->json(["error" => "No se han encontrado Direcciones"], 404);
+                    }
+                    
+                }
+         
             }
+            $transform_obj = new TransformDto();
+            $jsonContent = $transform_obj->encoderDto($dtoList);
+            return $this->json($jsonContent);
 
         }else{
             return $this->json(["error" => "No se han encontrado Sublineas"], 404);
         }
-
-        //Recorremos el array de Origen y Destino
-        foreach($origenDestinoList as $origenDestino){
-            //Guaradamos todos los horarios disponibles de las paradas para todas las lineas, sublinas y direcciones
-            $horariosParada = $this->em->getRepository(Horario::class)->findHorariosByParada($origenDestino->getId());
-
-            //Generamos el dto con Datos de las Paradas 
-            $dtoParHorario = ParadaHorarioDto::of($origenDestino->getId(),
-                                                $origenDestino->getNombre(),
-                                                $origenDestino->getPoblacion()->getNombre(),
-                                                $horariosParada);
-                    
-                    array_push($dtoParHorarios, $dtoParHorario);
-            //Creamos una variable que almacena las direcciones y orden de las paradas        
-            $ordenDires = $this->em->getRepository(SublineasParadasHorarios::class)->findDirOrdByParada($origenDestino->getId());
-            
-            //Generamos el dto con Datos de SublineasParadasHorarios, direccion y orden
-            foreach($ordenDires as $ordenDire ){
-                $dtoSubParHorario = SubParHorDto::of($ordenDire['orden'],
-                                                $ordenDire['direccion'],
-                                                $origenDestino->getId()
-                                                );
-
-                array_push($dtoSubParHorarios, $dtoSubParHorario);
-            }   
-        }
-        //Generamos un nuevo dto que retorna un objeto compuesto por los dtos anteriores
-        $dtoList = CuerpoOrigenDestinoDto::of($dtoLineas,
-                                            $dtoSublineas,
-                                            $dtoParHorarios,
-                                            $dtoSubParHorarios);
-        $transform_obj = new TransformDto();
-        $jsonContent = $transform_obj->encoderDtoObject($dtoList);
-        return $this->json($jsonContent);                                    
                             
     }
 

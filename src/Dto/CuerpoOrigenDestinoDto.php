@@ -4,40 +4,118 @@ namespace App\Dto;
 
 class CuerpoOrigenDestinoDto
 {
-    private array $lineasCO;
-    private array $sublineasCO;
-    private array $horarioParadaCO;
-    private array $subParHorCO;
+    private int $idLinea;
+    private string $linea;
+    private string $empresa;
+    private int $idSublinea;
+    private string $sublinea;
+    private array $direcciones;
+
 
     public function __construct()
     {
         
     }
-    
-    static function of(array $lineasCO, array $sublineasCO, array $horarioParadaCO, array $subParHorCO): CuerpoOrigenDestinoDto{
+
+    static function of(int $idLinea, string $linea,string $empresa, int $idSublinea, string $sublinea, array $direcciones): CuerpoOrigenDestinoDto {
         $data = new CuerpoOrigenDestinoDto();
-        $data->setLineasCO($lineasCO);
-        $data->setSublinasCO($sublineasCO);
-        $data->setHorarioParadaCO($horarioParadaCO);
-        $data->setSubParHorCO($subParHorCO);
+        $data->setIdLinea($idLinea);
+        $data->setLinea($linea);
+        $data->setEmpresa($empresa);
+        $data->setIdSublinea($idSublinea);
+        $data->setSublinea($sublinea);
+        $data->setDirecciones($direcciones);
         return $data;
     }
 
     /**
-     * @return array
+     * @return int
      */
-    public function getLineasCO()
+    public function getIdLinea(): int
     {
-        return $this->lineasCO;
+        return $this->idLinea;
     }
 
-   /**
-     * @param array $lineasCO
+    /**
+     * @param int $idLinea
      * @return CuerpoOrigenDestinoDto
      */
-    public function setLineasCO($lineasCO): CuerpoOrigenDestinoDto
+    public function setIdLinea(int $idLinea): CuerpoOrigenDestinoDto
     {
-        $this->lineasCO = $lineasCO;
+        $this->idLinea = $idLinea;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getLinea(): string
+    {
+        return $this->linea;
+    }
+
+    /**
+     * @param string $linea
+     * @return CuerpoOrigenDestinoDto
+     */
+    public function setLinea(string $linea): CuerpoOrigenDestinoDto
+    {
+        $this->linea = $linea;
+        return $this;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEmpresa(): string
+    {
+        return $this->empresa;
+    }
+
+    /**
+     * @param string $empresa
+     * @return CuerpoOrigenDestinoDto
+     */
+    public function setEmpresa(string $empresa): CuerpoOrigenDestinoDto
+    {
+        $this->empresa = $empresa;
+        return $this;
+    }
+
+    /**
+     * @return int
+     */ 
+    public function getIdSublinea()
+    {
+        return $this->idSublinea;
+    }
+
+    /**
+     * @param int $idLinea
+     * @return CuerpoOrigenDestinoDto
+     */
+    public function setIdSublinea($idSublinea) : CuerpoOrigenDestinoDto
+    {
+        $this->idSublinea = $idSublinea;
+
+        return $this;
+    }
+
+    /**
+     * @return string
+     */ 
+    public function getSublinea()
+    {
+        return $this->sublinea;
+    }
+
+     /**
+     * @param string $sublinea
+     * @return CuerpoOrigenDestinoDto
+     */
+    public function setSublinea($sublinea) : CuerpoOrigenDestinoDto
+    {
+        $this->sublinea = $sublinea;
 
         return $this;
     }
@@ -45,57 +123,18 @@ class CuerpoOrigenDestinoDto
     /**
      * @return array
      */ 
-    public function getSublinasCO()
+    public function getDirecciones()
     {
-        return $this->sublineasCO;
+        return $this->direcciones;
     }
 
     /**
-     * @param array $sublinasCO
+     * @param array $direcciones
      * @return CuerpoOrigenDestinoDto
      */
-    public function setSublinasCO($sublineasCO): CuerpoOrigenDestinoDto
+    public function setDirecciones($direcciones)
     {
-        $this->sublineasCO = $sublineasCO;
-
-        return $this;
-    }
-
-
-    /**
-     * @return array
-     */ 
-    public function getHorarioParadaCO()
-    {
-        return $this->horarioParadaCO;
-    }
-
-    /**
-     * @param array $horarioParadaCO
-     * @return CuerpoOrigenDestinoDto
-     */
-    public function setHorarioParadaCO($horarioParadaCO): CuerpoOrigenDestinoDto
-    {
-        $this->horarioParadaCO = $horarioParadaCO;
-
-        return $this;
-    }
-
-    /**
-     * @return array
-     */
-    public function getSubParHorCO()
-    {
-        return $this->subParHorCO;
-    }
-
-    /**
-     * @param array $subParHorCO
-     * @return CuerpoOrigenDestinoDto
-     */
-    public function setSubParHorCO($subParHorCO): CuerpoOrigenDestinoDto
-    {
-        $this->subParHorCO = $subParHorCO;
+        $this->direcciones = $direcciones;
 
         return $this;
     }
