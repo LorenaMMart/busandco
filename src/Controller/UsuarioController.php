@@ -115,8 +115,8 @@ class UsuarioController extends AbstractController
                         //Recorremos las paradas y recuperamos los Horarios y el orden
                         foreach($paradasDireccion as $paradaDireccion){
                             if($paradaDireccion){
-                                $horariosParada = $this->em->getRepository(Horario::class)->findHorariosByParada($paradaDireccion->getId());
-                                $ordenParada = $this->em->getRepository(SublineasParadasHorarios::class)->findOrdenByParadaDireccion($paradaDireccion->getId(), $direccionSublinea);
+                                $horariosParada = $this->em->getRepository(Horario::class)->findHorariosByParadaSublinea($paradaDireccion->getId(),$sublineaBusqueda->getId());
+                                $ordenParada = $this->em->getRepository(SublineasParadasHorarios::class)->findOrdenByParadaDireccion($paradaDireccion->getId(), $direccionSublinea['direccion']);
                                 if(count($ordenParada) == 0){
                                     return $this->json(["error" => "No se han encontrado Datos"], 404);
                                 }else{
@@ -127,26 +127,8 @@ class UsuarioController extends AbstractController
                                         $ordenParada[0]['orden'],
                                         $horariosParada);
                                         array_push($dtoParadas, $dtoParada);
-
-                                        //Generamos el dto de direcciones
-                                        $dtoDireccion = CODireccionesDto::of($direccionSublinea['direccion'],
-                                                                            $dtoParadas);
-                                        array_push($dtoDirecciones, $dtoDireccion);
-
-                                        //Generamos el dto de Sublineas
-                                        $linea = $sublineaBusqueda->getLinea();
-                                        $idLinea = $linea->getId();
-                                        $nombreLinea = $linea->getNombre();
-                                        $empresa = $linea->getEmpresa()->getNombre();
-                                        $dtoCuerpoOrigenDestino = CuerpoOrigenDestinoDto::of($idLinea,
-                                                                                            $nombreLinea,
-                                                                                            $empresa,
-                                                                                            $sublineaBusqueda->getId(),
-                                                                                            $sublineaBusqueda->getNombre(),
-                                                                                            $dtoDirecciones);
-                                        array_push($dtoList, $dtoCuerpoOrigenDestino);
-
-                                      
+                                        $horariosParada = [];
+ 
                                     }
                             }
                             else{
@@ -154,12 +136,33 @@ class UsuarioController extends AbstractController
                             }   
                         } 
 
+                        //Generamos el dto de direcciones
+                        $dtoDireccion = CODireccionesDto::of($direccionSublinea['direccion'],
+                                                            $dtoParadas);
+                        array_push($dtoDirecciones, $dtoDireccion);
+                        $dtoParadas = [];
+
                     }
                     else{
                         return $this->json(["error" => "No se han encontrado Direcciones"], 404);
                     }
                     
                 }
+
+                //Generamos el dto de Sublineas
+                $linea = $sublineaBusqueda->getLinea();
+                $idLinea = $linea->getId();
+                $nombreLinea = $linea->getNombre();
+                $empresa = $linea->getEmpresa()->getNombre();
+                $dtoCuerpoOrigenDestino = CuerpoOrigenDestinoDto::of($idLinea,
+                                                                    $nombreLinea,
+                                                                    $empresa,
+                                                                    $sublineaBusqueda->getId(),
+                                                                    $sublineaBusqueda->getNombre(),
+                                                                    $dtoDirecciones);             
+                array_push($dtoList, $dtoCuerpoOrigenDestino);
+                $dtoDirecciones = [];
+
          
             }
             $transform_obj = new TransformDto();
