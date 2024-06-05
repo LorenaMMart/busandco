@@ -45,7 +45,7 @@ class UsuarioController extends AbstractController
        $this->em = $entityM;
     }
 
-    #[Route('/usuario', name: 'app_usuario')]
+    #[Route('/usuario', name: 'app_usuario', methods: 'GET')]
     public function index(): JsonResponse{
         return $this->json([
             'message' => 'Server status OK!',
@@ -53,7 +53,7 @@ class UsuarioController extends AbstractController
         ]);
     }
 
-    #[Route('/busqueda', name: 'app_busqueda')]
+    #[Route('/busqueda', name: 'app_busqueda', methods: 'GET')]
     public function busquedaOrigenDestino(): JsonResponse{
         
         $paradas = $this->em->getRepository(Parada::class)->findAll();
@@ -82,7 +82,7 @@ class UsuarioController extends AbstractController
         }  
     }
 
-    #[Route('/origenDestino', name: 'app_origenDestino')]
+    #[Route('/origenDestino', name: 'app_origenDestino', methods: 'GET')]
     public function cuerpoOrigenDestino(Request $request): JsonResponse{
         //Recuperasmos los valores de la request
         $origen = $request->query->get('origen');
@@ -115,7 +115,7 @@ class UsuarioController extends AbstractController
                         //Recorremos las paradas y recuperamos los Horarios y el orden
                         foreach($paradasDireccion as $paradaDireccion){
                             if($paradaDireccion){
-                                $horariosParada = $this->em->getRepository(Horario::class)->findHorariosByParadaSublinea($paradaDireccion->getId(),$sublineaBusqueda->getId());
+                                $horariosParada = $this->em->getRepository(Horario::class)->findHorariosByParadaSublineaDireccion($sublineaBusqueda->getId(),$paradaDireccion->getId(), $direccionSublinea);
                                 $ordenParada = $this->em->getRepository(SublineasParadasHorarios::class)->findOrdenByParadaDireccion($paradaDireccion->getId(), $direccionSublinea['direccion']);
                                 if(count($ordenParada) == 0){
                                     return $this->json(["error" => "No se han encontrado Datos"], 404);
