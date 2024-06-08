@@ -32,7 +32,7 @@ class Incidencia
     /**
      * @var Collection<int, IncidenciasSublineas>
      */
-    #[ORM\OneToMany(targetEntity: IncidenciasSublineas::class, mappedBy: 'indicencia')]
+    #[ORM\OneToMany(targetEntity: IncidenciasSublineas::class, mappedBy: 'incidencia')]
     private Collection $incidenciasSublineas;
 
     public function __construct()
@@ -105,7 +105,7 @@ class Incidencia
     {
         if (!$this->incidenciasSublineas->contains($incidenciasSublinea)) {
             $this->incidenciasSublineas->add($incidenciasSublinea);
-            $incidenciasSublinea->setIndicencia($this);
+            $incidenciasSublinea->setIncidencia($this);
         }
 
         return $this;
@@ -115,8 +115,8 @@ class Incidencia
     {
         if ($this->incidenciasSublineas->removeElement($incidenciasSublinea)) {
             // set the owning side to null (unless already changed)
-            if ($incidenciasSublinea->getIndicencia() === $this) {
-                $incidenciasSublinea->setIndicencia(null);
+            if ($incidenciasSublinea->getIncidencia() === $this) {
+                $incidenciasSublinea->setIncidencia(null);
             }
         }
 

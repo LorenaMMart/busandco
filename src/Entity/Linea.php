@@ -34,8 +34,8 @@ class Linea
     #[ORM\Column(length: 50)]
     private ?string $tipo = null;
 
-    #[ORM\Column(nullable : true)]
-    private ?bool $activa = null;
+    #[ORM\Column]
+    private ?bool $activa = true;
 
     public function __construct()
     {

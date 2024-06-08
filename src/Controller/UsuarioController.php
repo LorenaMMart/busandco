@@ -17,7 +17,6 @@ use App\Entity\SublineasParadasHorarios;
 use App\Entity\Coordenadas;
 use App\Entity\Horario;
 use App\Entity\Empresa;
-use App\Entity\Noticia;
 use App\Entity\Incidencia;
 
 use App\Dto\ListLineasDto;
@@ -30,7 +29,6 @@ use App\Dto\EmpresaDto;
 use App\Dto\BusquedaOrigenDestinoDto;
 use App\Dto\CuerpoLineaDetalleDto;
 use App\Dto\IncidenciasDto;
-use App\Dto\NoticiaDto;
 use App\Dto\CuerpoOrigenDestinoDto;
 
 use App\Dto\COParadasDto;
@@ -181,17 +179,23 @@ class UsuarioController extends AbstractController
         if($lineas){
             $dtoList = [];
             foreach($lineas as $linea){
-                $dto = ListLineasDto::of($linea->getId(),
+                if($linea->isActiva()){
+                    $dto = ListLineasDto::of($linea->getId(),
                                         $linea->getNombre(),
                                         $linea->getDescripcion(),
                                         $linea->getEmpresa()->getNombre(),
                                         $linea->getTipo());
-                array_push($dtoList,$dto);                        
+                    array_push($dtoList,$dto);     
+                }                      
             }
-            
-            $transform_obj = new TransformDto();
-            $jsonContent = $transform_obj->encoderDto($dtoList);
-            return $this->json($jsonContent);
+            if(count($dtoList)>0){
+                $transform_obj = new TransformDto();
+                $jsonContent = $transform_obj->encoderDto($dtoList);
+                return $this->json($jsonContent);
+            }
+            else{
+                return $this->json(["No hay lineas activas"], 404);
+            }  
         }
         else{
             return $this->json(["error" => "Linea no encontrada"], 404);
@@ -201,7 +205,7 @@ class UsuarioController extends AbstractController
     #[Route('/lineadetalleca/{idLinea}', name: 'app_lineadetalle_ca', methods: 'GET')]
     public function lineaDetalleCabecera($idLinea): JsonResponse {
         $linea = $this->em->getRepository(Linea::class)->find($idLinea);
-        if($idLinea && $idLinea != null && $linea){
+        if($idLinea && $idLinea != null && $linea && $linea->isActiva()){
 
             $dtoSubline = [];
             $idSublinea = 0;
@@ -251,7 +255,7 @@ class UsuarioController extends AbstractController
         $direccion = $request->query->get('direccion');
         $sublinea = $this->em->getRepository(Sublinea::class)->find($idSubLinea);
         $linea = $this->em->getRepository(Linea::class)->find($idLinea);
-        if($idSubLinea != null && $idLinea != null && $idSubLinea && $linea){
+        if($idSubLinea != null && $idLinea != null && $idSubLinea && $linea && $linea->isActiva()){
             $dtoList = [];
             $paradas =  $this->em->getRepository(Parada::class)->findParadasBySublinea($idSubLinea,$direccion);
             if($sublinea && $paradas){
@@ -280,9 +284,15 @@ class UsuarioController extends AbstractController
 
     #[Route('/paradahorario/{idSublinea}/{idParada}', name: 'app_parada_ho', methods: 'GET')]
     public function paradaHorario(Request $request,$idSublinea,$idParada): JsonResponse{
-        $direccion= "";
+        $direccion = "";
+        $sublinea = new Sublinea();
         $direccionRequest = $request->query->get('direccion');
-        $sublinea = $this->em->getRepository(Sublinea::class)->find($idSublinea);
+        $sublineas = $this->em->getRepository(Sublinea::class)->findSublineasActivas($idSublinea);
+        if(count($sublineas)==0){
+            return $this->json(["error" => "Sublinea no encontrada"], 404);
+        }else{
+            $sublinea = $sublineas[0];
+        }
         $direcciones = $this->em->getRepository(SublineasParadasHorarios::class)->findDireccionesBySublinea($sublinea->getId());
 
         if($direccionRequest){

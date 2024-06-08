@@ -26,14 +26,14 @@ class IncidenciasSublineas
         return $this->id;
     }
 
-    public function getIndicencia(): ?Incidencia
+    public function getIncidencia(): ?Incidencia
     {
         return $this->incidencia;
     }
 
-    public function setIndicencia(?Incidencia $indicencia): static
+    public function setIncidencia(?Incidencia $incidencia): static
     {
-        $this->incidencia = $indicencia;
+        $this->incidencia = $incidencia;
 
         return $this;
     }
