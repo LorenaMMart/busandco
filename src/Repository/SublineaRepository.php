@@ -64,7 +64,7 @@ class SublineaRepository extends ServiceEntityRepository
                                     JOIN sl.sublineasParadasHorarios sub 
                                     JOIN sub.parada pa 
                                     JOIN sl.linea li 
-                                    WHERE pa.id = ?1 or pa.id = ?2 and li.activa = true");
+                                    WHERE (pa.id = ?1 or pa.id = ?2) and li.activa = true");
      $query->setParameter(1, $pOrigen);
      $query->setParameter(2, $pDestino);
      return $query->getResult();

@@ -7,7 +7,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Persistence\ManagerRegistry;
-use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\Linea;
 use App\Entity\Sublinea;
 use App\Entity\Empresa;
@@ -30,7 +29,6 @@ class AdminController extends AbstractController
     public function listado(ManagerRegistry $mr) : JsonResponse
     {
         $lineas =  $mr->getRepository(Linea::class)->findAll();
-        $empresas =  $mr->getRepository(Empresa::class)->findAll();
 
         $data = [];
         foreach($lineas as $linea){
@@ -232,8 +230,5 @@ class AdminController extends AbstractController
             return $this->json('La linea con id ' . $linea->getId() . " ha sido recuperada");
         }
     }
-
-
-
 
 }
