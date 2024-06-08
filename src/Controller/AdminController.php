@@ -55,6 +55,32 @@ class AdminController extends AbstractController
         }
     }
 
+    #[Route('/listadoEmpresas', name: 'app_listado', methods: 'GET')]
+    public function listadoEmpresas(ManagerRegistry $mr) : JsonResponse
+    {
+        $empresas =  $mr->getRepository(Empresa::class)->findAll();
+
+        $data = [];
+        foreach($empresas as $empresa){
+            $data[] = [
+                'id'    => $empresa->getId(),
+                'nombre' => $empresa->getNombre(),
+                'direccion' => $empresa->getDireccion(),
+                'telefono' => $empresa->getTelefono(),
+                'email' => $empresa->getEmail(),
+                'web' => $empresa->getWeb()
+            ];
+            
+        }
+        if(count($data) != 0)
+        {
+            return $this->json($data);
+        }
+        else{
+            return $this->json(["error" => "No se han encontrado empresas"], 404);
+        }
+    }
+
     #[Route('/addlinea', name: 'app_addlinea', methods: 'POST')]
     public function addlinea(ManagerRegistry $mr, Request $request) : JsonResponse
     {
