@@ -31,9 +31,7 @@ class Empresa
     #[ORM\Column(length: 100)]
     private ?string $web = null;
 
-    #[ORM\Column(type: Types::BLOB)]
-    private $logo;
-
+   
     /**
      * @var Collection<int, Linea>
      */
@@ -106,18 +104,6 @@ class Empresa
     public function setWeb(string $web): static
     {
         $this->web = $web;
-
-        return $this;
-    }
-
-    public function getLogo()
-    {
-        return $this->logo;
-    }
-
-    public function setLogo($logo): static
-    {
-        $this->logo = $logo;
 
         return $this;
     }

@@ -219,7 +219,6 @@ class UsuarioController extends AbstractController
 
             $empresa = $linea->getEmpresa();
                 $nombreEmpresa = $empresa->getNombre();
-                $logoEmpresa = $empresa->getLogo();
             
             //Recupero todas las direcciones de la sublinea, para pasarlas al frontend, en el método cuerpo se le para la dirección seleccionada por request    
             $direcciones = $this->em->getRepository(SublineasParadasHorarios::class)->findDireccionesBySublinea($idSublinea);
@@ -236,7 +235,6 @@ class UsuarioController extends AbstractController
                     $dtoSubline,
                     $direccionS,
                     $nombreEmpresa,
-                    base64_encode($logoEmpresa .''),
                     $coordenadas);
  
             $transform_obj = new TransformDto();
@@ -322,30 +320,6 @@ class UsuarioController extends AbstractController
         } 
     }
 
-    #[Route('/noticias', name: 'app_noticias', methods: 'GET')]
-    public function noticias(): JsonResponse {
-        $noticias = $this->em->getRepository(Noticia::class)->findAll();
-        if($noticias){
-            $dtoList = [];
-            foreach($noticias as $noticia){
-                $dto = NoticiaDto::of($noticia->getId(),
-                                        $noticia->getNombre(),
-                                        $noticia->getDescripcion(),
-                                        $noticia->getCuerpo(),
-                                        $noticia->getFecha());
-
-                array_push($dtoList,$dto);                        
-            }
-            
-            $transform_obj = new TransformDto();
-            $jsonContent = $transform_obj->encoderDto($dtoList);
-            return $this->json($jsonContent);
-        }
-        else{
-            return $this->json(["error" => "No existen noticias"], 404);
-        } 
-    }
-
     #[Route('/incidencias', name: 'app_incidencias', methods: 'GET')]
     public function incidencias(): JsonResponse {
         $incidencias = $this->em->getRepository(Incidencia::class)->findAll();
@@ -388,8 +362,7 @@ class UsuarioController extends AbstractController
                                         $empresa->getDireccion(),
                                         $empresa->getTelefono(),
                                         $empresa->getEmail(),
-                                        $empresa->getWeb(),
-                                        base64_encode($empresa->getLogo() . ''));
+                                        $empresa->getWeb());
                 array_push($dtoList,$dto);                        
             }
             

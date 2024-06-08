@@ -10,14 +10,13 @@ class EmpresaDto
     private string $telefono;
     private string $email;
     private string $web;
-    private string $logo;
    
     public function __construct()
     {
         
     }
 
-    static function of(int $id,string $nombre, string $direccion, string $telefono, string $email, string $web, string $logo): EmpresaDto
+    static function of(int $id,string $nombre, string $direccion, string $telefono, string $email, string $web): EmpresaDto
     {
         $data = new EmpresaDto();
         $data->setId($id);
@@ -26,7 +25,6 @@ class EmpresaDto
         $data->setTelefono($telefono);
         $data->setEmail($email);
         $data->setWeb($web);
-        $data->setLogo($logo);
        
         return $data;
     }
@@ -145,24 +143,6 @@ class EmpresaDto
         return $this;
     }
 
-    /**
-     * @return string
-     */
-    public function getLogo(): string
-    {
-        return $this->logo;
-    }
 
-    /**
-     * @param string $logo
-     * @return EmpresaDto
-     *
-     */
-    public function setLogo(string $logo): EmpresaDto
-    {
-        $this->logo = $logo;
-        return $this;
-    }
-   
 }
 ?>
