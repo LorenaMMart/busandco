@@ -28,7 +28,7 @@ class Linea
     /**
      * @var Collection<int, Sublinea>
      */
-    #[ORM\OneToMany(targetEntity: Sublinea::class, mappedBy: 'linea')]
+    #[ORM\OneToMany(targetEntity: Sublinea::class, mappedBy: 'linea', cascade: ['persist'])]
     private Collection $sublineas;
 
     #[ORM\Column(length: 50)]

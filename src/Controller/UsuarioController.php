@@ -81,7 +81,7 @@ class UsuarioController extends AbstractController
     }
 
     #[Route('/origenDestino', name: 'app_origenDestino', methods: 'GET')]
-    public function cuerpoOrigenDestino(Request $request): JsonResponse{
+    public function origenDestino(Request $request): JsonResponse{
         //Recuperasmos los valores de la request
         $origen = $request->query->get('origen');
         $destino = $request->query->get('destino');

@@ -103,7 +103,7 @@ class AdminController extends AbstractController
                 return $this->json('Una nueva linea ha sido creada satisfactoriamente con id ' . $linea->getId());
             }
             else{
-                return $this->json('Algo ha ido mal', 404);
+                return $this->json('Algo ha ido mal', 400);
             }
         }
         catch(\Exception $ex)
@@ -136,21 +136,34 @@ class AdminController extends AbstractController
         try{
             $entityManager = $mr->getManager();
             $linea = $entityManager->getRepository(Linea::class)->find($id);
-
+            
             if(!$linea || $linea->isActiva() == false){
                 return $this->json('No se ha encontrado la linea con id' . $id, 404);
             }
             else
             {
+                $sublineas = $linea->getSublineas();
                 $parameter = json_decode($request->getContent(), true);
                 $linea->setNombre($parameter['nombre']);
                 $linea->setDescripcion($parameter['descripcion']);
-
                 $empresa = $mr->getRepository(Empresa::class)->find($parameter['empresa']);
                 $linea->setEmpresa($empresa);
-                //Lo que espera recibir es una Coleccion de objetos Sublinea
-                $sublinea = $mr->getRepository(Sublinea::class)->find($parameter['sublinea']);
-                $linea->addSublinea($sublinea);
+
+                //Recorremos las sublineas recuperadas de las lineas activas, comprobamos que existen datos y que la nueva sublinea no exsite ya
+                $sublExiste = false;
+                if(count($sublineas)>0 && isset($parameter['sublinea'])){
+                    foreach($sublineas as $sublinea){
+                        if($sublinea->getNombre() == $parameter['sublinea']){
+                            $sublExiste = true;
+                        }
+                    }
+                }
+                if(!$sublExiste && isset($parameter['sublinea'])){
+                    $sublineaCrear = new Sublinea();
+                    $sublineaCrear->setNombre($parameter['sublinea']);
+                    $linea->addSublinea($sublineaCrear);
+                }    
+                
                 $linea->setTipo($parameter['tipo']);
                 $entityManager->flush();
                 $data = [
