@@ -10,7 +10,10 @@ runtime:
         - iconv
         - ctype
         
-
+dependencies:
+    php:
+        composer/composer: '^2'
+        
 #variables:
 #    php:
 #        # uncomment on PHP 7.4+
