@@ -15,7 +15,7 @@ class IncidenciasSublineas
 
     #[ORM\ManyToOne(inversedBy: 'incidenciasSublineas')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Incidencia $indicencia = null;
+    private ?Incidencia $incidencia = null;
 
     #[ORM\ManyToOne(inversedBy: 'incidenciasSublineas')]
     #[ORM\JoinColumn(nullable: false)]
@@ -26,14 +26,14 @@ class IncidenciasSublineas
         return $this->id;
     }
 
-    public function getIndicencia(): ?Incidencia
+    public function getIncidencia(): ?Incidencia
     {
-        return $this->indicencia;
+        return $this->incidencia;
     }
 
-    public function setIndicencia(?Incidencia $indicencia): static
+    public function setIncidencia(?Incidencia $incidencia): static
     {
-        $this->indicencia = $indicencia;
+        $this->incidencia = $incidencia;
 
         return $this;
     }

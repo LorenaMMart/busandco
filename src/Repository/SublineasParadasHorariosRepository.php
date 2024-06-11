@@ -56,4 +56,13 @@ class SublineasParadasHorariosRepository extends ServiceEntityRepository
      return $query->getResult();
     }
 
+    public function findOrdenByParadaDireccion($paradaId, $direccion)
+    {
+     $query = $this->em->createQuery("SELECT DISTINCT sub.orden FROM App\Entity\SublineasParadasHorarios sub JOIN sub.parada pa  WHERE pa.id = ?1 and sub.direccion = ?2");
+     $query->setParameter(1, $paradaId);
+     $query->setParameter(2, $direccion);
+     return $query->getResult();
+    }
+
+
 }

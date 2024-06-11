@@ -28,11 +28,14 @@ class Linea
     /**
      * @var Collection<int, Sublinea>
      */
-    #[ORM\OneToMany(targetEntity: Sublinea::class, mappedBy: 'linea')]
+    #[ORM\OneToMany(targetEntity: Sublinea::class, mappedBy: 'linea', cascade: ['persist'])]
     private Collection $sublineas;
 
     #[ORM\Column(length: 50)]
     private ?string $tipo = null;
+
+    #[ORM\Column]
+    private ?bool $activa = true;
 
     public function __construct()
     {
@@ -118,6 +121,18 @@ class Linea
     public function setTipo(string $tipo): static
     {
         $this->tipo = $tipo;
+
+        return $this;
+    }
+
+    public function isActiva(): ?bool
+    {
+        return $this->activa;
+    }
+
+    public function setActiva(bool $activa): static
+    {
+        $this->activa = $activa;
 
         return $this;
     }

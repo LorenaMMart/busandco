@@ -9,7 +9,6 @@ class CabeceraLineaDto
     private array $sublineas;
     private array $direccion;
     private string $empresa;
-    private string $logo;
     private array $coordenadas;
 
 
@@ -18,14 +17,13 @@ class CabeceraLineaDto
         
     }
 
-    static function of(int $idLinea, string $nombreLinea, array $sublineas, array $direccion, string $empresa, string $logo, array $coordenadas): CabeceraLineaDto{
+    static function of(int $idLinea, string $nombreLinea, array $sublineas, array $direccion, string $empresa, array $coordenadas): CabeceraLineaDto{
         $data = new CabeceraLineaDto();
         $data->setIdLinea($idLinea);
         $data->setNombreLinea($nombreLinea);
         $data->setSublineas($sublineas);
         $data->setDireccion($direccion);
         $data->setEmpresa($empresa);
-        $data->setLogo($logo);
         $data->setCoordenadas($coordenadas);
         return $data;
     }
@@ -117,24 +115,6 @@ class CabeceraLineaDto
     public function setEmpresa(string $empresa): CabeceraLineaDto
     {
         $this->empresa = $empresa;
-        return $this;
-    }
-
-    /**
-     * @return string
-     */
-    public function getLogo(): string
-    {
-        return $this->logo;
-    }
-
-    /**
-     * @param string $logo
-     * @return CabeceraLineaDto
-     */
-    public function setLogo(string $logo): CabeceraLineaDto
-    {
-        $this->logo = $logo;
         return $this;
     }
 

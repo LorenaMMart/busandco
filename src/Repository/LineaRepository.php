@@ -56,4 +56,12 @@ class LineaRepository extends ServiceEntityRepository
      $query->setParameter(2, $lineaId);
      return $query->getResult();
     }
+
+    public function findLineaByIncidencia($idIncidencia)
+    {
+     $query = $this->em->createQuery("SELECT li.id, li.nombre FROM App\Entity\Linea li JOIN li.sublineas sl JOIN sl.incidenciasSublineas insl JOIN insl.incidencia inc WHERE inc.id = ?1 and inc.estado = ?2");
+     $query->setParameter(1, $idIncidencia);
+     $query->setParameter(2, 1);
+     return $query->getResult();
+    }
 }

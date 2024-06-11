@@ -5,8 +5,8 @@ namespace App\Entity;
 use App\Repository\EmpresaRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 #[ORM\Entity(repositoryClass: EmpresaRepository::class)]
 class Empresa
@@ -31,13 +31,12 @@ class Empresa
     #[ORM\Column(length: 100)]
     private ?string $web = null;
 
-    #[ORM\Column(type: Types::BLOB)]
-    private $logo;
-
+   
     /**
      * @var Collection<int, Linea>
      */
     #[ORM\OneToMany(targetEntity: Linea::class, mappedBy: 'empresa')]
+    #[Ignore] 
     private Collection $lineas;
 
     public function __construct()
@@ -106,18 +105,6 @@ class Empresa
     public function setWeb(string $web): static
     {
         $this->web = $web;
-
-        return $this;
-    }
-
-    public function getLogo()
-    {
-        return $this->logo;
-    }
-
-    public function setLogo($logo): static
-    {
-        $this->logo = $logo;
 
         return $this;
     }

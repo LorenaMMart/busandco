@@ -5,6 +5,7 @@ namespace App\Repository;
 use App\Entity\Sublinea;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
+use Doctrine\ORM\EntityManagerInterface;
 
 /**
  * @extends ServiceEntityRepository<Sublinea>
@@ -16,9 +17,11 @@ use Doctrine\Persistence\ManagerRegistry;
  */
 class SublineaRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    private $em;
+    public function __construct(ManagerRegistry $registry, EntityManagerInterface $entityM)
     {
         parent::__construct($registry, Sublinea::class);
+        $this->em = $entityM;
     }
 
     //    /**
@@ -45,6 +48,27 @@ class SublineaRepository extends ServiceEntityRepository
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+    public function findSublineasActivas($idSublinea)
+    {
+     $query = $this->em->createQuery("SELECT DISTINCT sl FROM App\Entity\Sublinea sl  
+                                    JOIN sl.linea li 
+                                    WHERE sl.id =?1 and li.activa = true");
+     $query->setParameter(1, $idSublinea);
+     return $query->getResult();
+    }
+
+    public function findSublineasByParadas($pOrigen, $pDestino)
+    {
+     $query = $this->em->createQuery("SELECT DISTINCT sl FROM App\Entity\Sublinea sl 
+                                    JOIN sl.sublineasParadasHorarios sub 
+                                    JOIN sub.parada pa 
+                                    JOIN sl.linea li 
+                                    WHERE (pa.id = ?1 or pa.id = ?2) and li.activa = true");
+     $query->setParameter(1, $pOrigen);
+     $query->setParameter(2, $pDestino);
+     return $query->getResult();
+    }
 
    
 }
