@@ -53,7 +53,7 @@ class AdminController extends AbstractController
         }
     }
 
-    #[Route('/listadoEmpresas', name: 'app_listado', methods: 'GET')]
+    #[Route('/listadoEmpresas', name: 'app_listadoEmp', methods: 'GET')]
     public function listadoEmpresas(ManagerRegistry $mr) : JsonResponse
     {
         $empresas =  $mr->getRepository(Empresa::class)->findAll();
