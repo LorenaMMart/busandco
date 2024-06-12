@@ -204,8 +204,7 @@ class AdminController extends AbstractController
     public function listadoBorradas(ManagerRegistry $mr) : JsonResponse
     {
         $lineas = $mr->getRepository(Linea::class)->findAll();
-        $empresas = $mr->getRepository(Empresa::class)->findAll();
-    
+            
         $data = [];
         foreach($lineas as $linea){
             if($linea->isActiva() == false){
@@ -216,7 +215,6 @@ class AdminController extends AbstractController
                     'empresa' => $linea->getEmpresa()->getNombre(),
                     'sublineas' => $linea->getSublineas(),
                     'tipo' => $linea->getTipo(),
-                    'empresas' => $empresas
                 ];
             }
         }
