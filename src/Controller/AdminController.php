@@ -36,7 +36,7 @@ class AdminController extends AbstractController
                 $sublineas = $linea->getSublineas();
                 $data[] = [
                     'id'    => $linea->getId(),
-                    'nombre' => $linea->getNombre(),
+                    'linea' => $linea->getNombre(),
                     'descripion' => $linea->getDescripcion(),
                     'empresa' => $linea->getEmpresa()->getNombre(),
                     'sublineas' => $sublineas,
@@ -62,7 +62,7 @@ class AdminController extends AbstractController
         foreach($empresas as $empresa){
             $data[] = [
                 'id'    => $empresa->getId(),
-                'nombre' => $empresa->getNombre(),
+                'linea' => $empresa->getNombre(),
                 'direccion' => $empresa->getDireccion(),
                 'telefono' => $empresa->getTelefono(),
                 'email' => $empresa->getEmail(),
@@ -88,7 +88,7 @@ class AdminController extends AbstractController
                 $entityManager = $mr->getManager();
                 $linea = new Linea();
                 $parameter = json_decode($request->getContent(), true);
-                $linea->setNombre($parameter['nombre']);
+                $linea->setNombre($parameter['linea']);
                 $linea->setDescripcion($parameter['descripcion']);
                 //Lo que espera recibir es un Objeto empresa
                 $empresa = $mr->getRepository(Empresa::class)->find($parameter['empresa']);
@@ -121,7 +121,7 @@ class AdminController extends AbstractController
        }else{
             $data = [
                 'id' => $linea->getId(),
-                'nombre' => $linea->getNombre(),
+                'linea' => $linea->getNombre(),
                 'descripcion' => $linea->getDescripcion(),
                 'empresa' =>$linea->getEmpresa()->getNombre(),
                 'tipo' =>$linea->getTipo()
@@ -144,7 +144,7 @@ class AdminController extends AbstractController
             {
                 $sublineas = $linea->getSublineas();
                 $parameter = json_decode($request->getContent(), true);
-                $linea->setNombre($parameter['nombre']);
+                $linea->setNombre($parameter['linea']);
                 $linea->setDescripcion($parameter['descripcion']);
                 $empresa = $mr->getRepository(Empresa::class)->find($parameter['empresa']);
                 $linea->setEmpresa($empresa);
