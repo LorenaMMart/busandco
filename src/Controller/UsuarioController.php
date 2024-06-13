@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
+use App\Service\UsuarioService as ServiceUsuarioService;
 
 use Doctrine\ORM\EntityManagerInterface;
 use App\Utils\TransformDto;
@@ -34,50 +35,57 @@ use App\Dto\CuerpoOrigenDestinoDto;
 use App\Dto\COParadasDto;
 use App\Dto\CODireccionesDto;
 
+
 #[Route('/usuario', name: 'usuario_')]
 class UsuarioController extends AbstractController
 {
    private $em;
-    public function __construct(EntityManagerInterface $entityM)
+   private $usuarioService;
+    public function __construct(EntityManagerInterface $entityM, ServiceUsuarioService $usuService)
     {
        $this->em = $entityM;
+       $this->usuarioService = $usuService;
     }
 
     #[Route('/usuario', name: 'app_usuario', methods: 'GET')]
     public function index(): JsonResponse{
-        return $this->json([
-            'message' => 'Server status OK!',
-            'path' => 'src/Controller/UsuarioController.php',
-        ]);
+        $result = $this->usuarioService->index();
+        return $this->json($result);
     }
 
     #[Route('/busqueda', name: 'app_busqueda', methods: 'GET')]
     public function busquedaOrigenDestino(): JsonResponse{
-        
-        $paradas = $this->em->getRepository(Parada::class)->findAll();
-        $empresas = $this->em->getRepository(Empresa::class)->findAll();
-        if($paradas && $empresas){
-            $dtoListParada = [];
-            $dtoListEmpresa = [];
-            foreach($paradas as $parada){
-                $dtoParada = ParadaDto::of($parada->getId(),$parada->getNombre(), $parada->getLatitud(), $parada->getLongitud(), $parada->getPoblacion()->getNombre());
-                array_push($dtoListParada, $dtoParada);
-            }
-            foreach($empresas as $empresa){
-                $dtoEmpresa = EmpresaReduDto::of($empresa->getId(), $empresa->getNombre());
-                array_push($dtoListEmpresa, $dtoEmpresa);                                    
-            }
 
-        $dto = BusquedaOrigenDestinoDto::of($dtoListParada,
-                                            $dtoListEmpresa);
+        $result =$this->usuarioService->busquedaOrigenDestino();
+        if(isset($result['error']))
+            return $this->json(["error" => $result['error']], $result['code']);
+        else
+            return $this->json($result);
+
+        // $paradas = $this->em->getRepository(Parada::class)->findAll();
+        // $empresas = $this->em->getRepository(Empresa::class)->findAll();
+        // if($paradas && $empresas){
+        //     $dtoListParada = [];
+        //     $dtoListEmpresa = [];
+        //     foreach($paradas as $parada){
+        //         $dtoParada = ParadaDto::of($parada->getId(),$parada->getNombre(), $parada->getLatitud(), $parada->getLongitud(), $parada->getPoblacion()->getNombre());
+        //         array_push($dtoListParada, $dtoParada);
+        //     }
+        //     foreach($empresas as $empresa){
+        //         $dtoEmpresa = EmpresaReduDto::of($empresa->getId(), $empresa->getNombre());
+        //         array_push($dtoListEmpresa, $dtoEmpresa);                                    
+        //     }
+
+        // $dto = BusquedaOrigenDestinoDto::of($dtoListParada,
+        //                                     $dtoListEmpresa);
             
-        $transform_obj = new TransformDto();
-        $jsonContent = $transform_obj->encoderDtoObject($dto);
-        return $this->json($jsonContent);
-        }
-        else{
-            return $this->json(["error" => "Búsqueda sin resultados"], 404);
-        }  
+        // $transform_obj = new TransformDto();
+        // $jsonContent = $transform_obj->encoderDtoObject($dto);
+        // return $this->json($jsonContent);
+        // }
+        // else{
+        //     return $this->json(["error" => "Búsqueda sin resultados"], 404);
+        // }  
     }
 
     #[Route('/origenDestino', name: 'app_origenDestino', methods: 'GET')]
@@ -385,3 +393,4 @@ class UsuarioController extends AbstractController
         } 
     }
 }
+?>

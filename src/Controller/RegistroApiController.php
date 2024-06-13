@@ -34,3 +34,4 @@ class RegistroApiController extends AbstractController
         return $this->json(['mensaje' => 'Registro realizado con éxito']);
     }
 }
+?>
