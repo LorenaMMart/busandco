@@ -77,6 +77,7 @@ class AdminService{
             $entityManager = $mr->getManager();
             $linea = new Linea();
             $parameter = json_decode($request->getContent(), true);
+            $parameter = $parameter['linea'];
             $linea->setNombre($parameter['linea']);
             $linea->setDescripcion($parameter['descripcion']);
             //Lo que espera recibir es un Objeto empresa
@@ -131,6 +132,7 @@ class AdminService{
         {
             $sublineas = $linea->getSublineas();
             $parameter = json_decode($request->getContent(), true);
+            $parameter = $parameter['linea'];
             $linea->setNombre($parameter['linea']);
             $linea->setDescripcion($parameter['descripcion']);
             $empresa = $mr->getRepository(Empresa::class)->find($parameter['empresa']);
