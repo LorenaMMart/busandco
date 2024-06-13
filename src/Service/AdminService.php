@@ -83,8 +83,12 @@ class AdminService{
             $empresa = $mr->getRepository(Empresa::class)->find($parameter['empresa']);
             $linea->setEmpresa($empresa);
             //Lo que espera recibir es una Coleccion de objetos Sublinea
-            $sublinea = $mr->getRepository(Sublinea::class)->find($parameter['sublinea']);
-            $linea->addSublinea($sublinea);
+            $sublineasN = explode(",", $parameter['sublinea']);
+            foreach($sublineasN as $sublineaN){
+                $sublinea = new Sublinea();
+                $sublinea->setNombre($sublineaN);
+                $linea->addSublinea($sublinea);
+            }
             $linea->setTipo($parameter['tipo']);
             $entityManager->persist($linea);
             $entityManager->flush();
@@ -152,7 +156,7 @@ class AdminService{
             $data = [
                 'id'    => $linea->getId(),
                 'linea' => $linea->getNombre(),
-                'descripion' => $linea->getDescripcion(),
+                'descripcion' => $linea->getDescripcion(),
                 'empresa' => $linea->getEmpresa(),
                 'sublineas' => $linea->getSublineas(),
                 'tipo' => $linea->getTipo(),
