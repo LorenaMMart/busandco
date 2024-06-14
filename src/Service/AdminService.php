@@ -77,20 +77,20 @@ class AdminService{
             $entityManager = $mr->getManager();
             $linea = new Linea();
             $parameter = json_decode($request->getContent(), true);
-            $parameter = $parameter['linea'];
-            $linea->setNombre($parameter['linea']);
-            $linea->setDescripcion($parameter['descripcion']);
+            $parameterLinea = $parameter['linea'];
+            $linea->setNombre($parameterLinea['linea']);
+            $linea->setDescripcion($parameterLinea['descripcion']);
             //Lo que espera recibir es un Objeto empresa
-            $empresa = $mr->getRepository(Empresa::class)->find($parameter['empresa']);
+            $empresa = $mr->getRepository(Empresa::class)->find($parameterLinea['empresa']);
             $linea->setEmpresa($empresa);
             //Lo que espera recibir es una Coleccion de objetos Sublinea
-            $sublineasN = explode(",", $parameter['sublinea']);
+            $sublineasN = explode(",", $parameterLinea['sublinea']);
             foreach($sublineasN as $sublineaN){
                 $sublinea = new Sublinea();
                 $sublinea->setNombre($sublineaN);
                 $linea->addSublinea($sublinea);
             }
-            $linea->setTipo($parameter['tipo']);
+            $linea->setTipo($parameterLinea['tipo']);
             $entityManager->persist($linea);
             $entityManager->flush();
 
@@ -130,37 +130,20 @@ class AdminService{
         }
         else
         {
-            $sublineas = $linea->getSublineas();
             $parameter = json_decode($request->getContent(), true);
-            $parameter = $parameter['linea'];
-            $linea->setNombre($parameter['linea']);
-            $linea->setDescripcion($parameter['descripcion']);
-            $empresa = $mr->getRepository(Empresa::class)->find($parameter['empresa']);
+            $parameterLinea = $parameter['linea'];
+            $linea->setNombre($parameterLinea['linea']);
+            $linea->setDescripcion($parameterLinea['descripcion']);
+            $empresa = $mr->getRepository(Empresa::class)->find($parameterLinea['empresa']);
             $linea->setEmpresa($empresa);
-
-            //Recorremos las sublineas recuperadas de las lineas activas, comprobamos que existen datos y que la nueva sublinea no exsite ya
-            $sublExiste = false;
-            if(count($sublineas)>0 && isset($parameter['sublinea'])){
-                foreach($sublineas as $sublinea){
-                    if($sublinea->getNombre() == $parameter['sublinea']){
-                        $sublExiste = true;
-                    }
-                }
-            }
-            if(!$sublExiste && isset($parameter['sublinea'])){
-                $sublineaCrear = new Sublinea();
-                $sublineaCrear->setNombre($parameter['sublinea']);
-                $linea->addSublinea($sublineaCrear);
-            }    
             
-            $linea->setTipo($parameter['tipo']);
+            $linea->setTipo($parameterLinea['tipo']);
             $entityManager->flush();
             $data = [
                 'id'    => $linea->getId(),
                 'linea' => $linea->getNombre(),
                 'descripcion' => $linea->getDescripcion(),
                 'empresa' => $linea->getEmpresa(),
-                'sublineas' => $linea->getSublineas(),
                 'tipo' => $linea->getTipo(),
                 'activa' => $linea->isActiva()
             ];

@@ -7,9 +7,6 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\Persistence\ManagerRegistry;
-use App\Entity\Linea;
-use App\Entity\Sublinea;
-use App\Entity\Empresa;
 use App\Service\AdminService;
 
 #[Route('/api', name: 'api_')]
