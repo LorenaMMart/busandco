@@ -77,20 +77,19 @@ class AdminService{
             $entityManager = $mr->getManager();
             $linea = new Linea();
             $parameter = json_decode($request->getContent(), true);
-            $parameterLinea = $parameter['linea'];
-            $linea->setNombre($parameterLinea['linea']);
-            $linea->setDescripcion($parameterLinea['descripcion']);
+            $linea->setNombre($parameter['linea']);
+            $linea->setDescripcion($parameter['descripcion']);
             //Lo que espera recibir es un Objeto empresa
-            $empresa = $mr->getRepository(Empresa::class)->find($parameterLinea['empresa']);
+            $empresa = $mr->getRepository(Empresa::class)->find($parameter['empresa']);
             $linea->setEmpresa($empresa);
             //Lo que espera recibir es una Coleccion de objetos Sublinea
-            $sublineasN = explode(",", $parameterLinea['sublinea']);
+            $sublineasN = explode(",", $parameter['sublinea']);
             foreach($sublineasN as $sublineaN){
                 $sublinea = new Sublinea();
                 $sublinea->setNombre($sublineaN);
                 $linea->addSublinea($sublinea);
             }
-            $linea->setTipo($parameterLinea['tipo']);
+            $linea->setTipo($parameter['tipo']);
             $entityManager->persist($linea);
             $entityManager->flush();
 
@@ -131,13 +130,12 @@ class AdminService{
         else
         {
             $parameter = json_decode($request->getContent(), true);
-            $parameterLinea = $parameter['linea'];
-            $linea->setNombre($parameterLinea['linea']);
-            $linea->setDescripcion($parameterLinea['descripcion']);
-            $empresa = $mr->getRepository(Empresa::class)->find($parameterLinea['empresa']);
+            $linea->setNombre($parameter['linea']);
+            $linea->setDescripcion($parameter['descripcion']);
+            $empresa = $mr->getRepository(Empresa::class)->find($parameter['empresa']);
             $linea->setEmpresa($empresa);
             
-            $linea->setTipo($parameterLinea['tipo']);
+            $linea->setTipo($parameter['tipo']);
             $entityManager->flush();
             $data = [
                 'id'    => $linea->getId(),
