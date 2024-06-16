@@ -194,38 +194,44 @@ class UsuarioService{
         if($idLinea && $idLinea != null && $linea && $linea->isActiva()){
 
             $dtoSubline = [];
+            $direccionS = [];
+            $coordenadas = [];
             $idSublinea = 0;
 
-                $nombreLinea = $linea->getNombre();
+            $nombreLinea = $linea->getNombre();
 
             $sublineas = $linea->getSublineas();
-            $idSublinea = $sublineas[0]->getId();
-                foreach($sublineas as $sublinea){
-                    $dtoL = SublineaDto::of($sublinea->getId(),
-                    $sublinea->getNombre());
-
-                    array_push($dtoSubline, $dtoL);
-                }
 
             $empresa = $linea->getEmpresa();
-                $nombreEmpresa = $empresa->getNombre();
-            
-            //Recupero todas las direcciones de la sublinea, para pasarlas al frontend, en el método cuerpo se le para la dirección seleccionada por request    
-            $direcciones = $this->em->getRepository(SublineasParadasHorarios::class)->findDireccionesBySublinea($idSublinea);
-            $direccionS = [];
-            if(count($direcciones) != 0){
-                $direccionS = $direcciones;  
-            }
+            $nombreEmpresa = $empresa->getNombre();
+
+            if($sublineas != null && count($sublineas) != 0) 
+            {
+                $idSublinea = $sublineas[0]->getId();
+                    foreach($sublineas as $sublinea){
+                        $dtoL = SublineaDto::of($sublinea->getId(),
+                        $sublinea->getNombre());
+
+                        array_push($dtoSubline, $dtoL);
+                    }
+
+                //Recupero todas las direcciones de la sublinea, para pasarlas al frontend, en el método cuerpo se le para la dirección seleccionada por request    
+                $direcciones = $this->em->getRepository(SublineasParadasHorarios::class)->findDireccionesBySublinea($idSublinea);
                 
-            $coordenadas = $this->em->getRepository(Coordenadas::class)->findCoordenadasBySublinea($idSublinea); 
+                if(count($direcciones) != 0){
+                    $direccionS = $direcciones;  
+                }
+                    
+                $coordenadas = $this->em->getRepository(Coordenadas::class)->findCoordenadasBySublinea($idSublinea); 
+            }
             
-                $dto = CabeceraLineaDto::of(
-                    $idLinea,
-                    $nombreLinea,
-                    $dtoSubline,
-                    $direccionS,
-                    $nombreEmpresa,
-                    $coordenadas);
+            $dto = CabeceraLineaDto::of(
+                $idLinea,
+                $nombreLinea,
+                $dtoSubline,
+                $direccionS,
+                $nombreEmpresa,
+                $coordenadas);
  
             $transform_obj = new TransformDto();
             $jsonContent = $transform_obj->encoderDtoObject($dto);

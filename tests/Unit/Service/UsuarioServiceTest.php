@@ -172,7 +172,7 @@ class UsuarioServiceTest extends TestCase
         $direcciones =[['direccion' => 'La Alberca-Murcia']];
         $sublineasParadasHorariosRepositoryMock->expects($this->once())->method('findDireccionesBySublinea')->with($sublinea->getId())->willReturn($direcciones);
 
-        $paradaRepositoryMock->expects($this->once())->method('findParadasByDireccion')->with('La Alberca-Murcia')->willReturn([$paradaOrigen]);
+        $paradaRepositoryMock->expects($this->once())->method('findParadasByDireccionSublinea')->with('La Alberca-Murcia')->willReturn([$paradaOrigen]);
 
         $horarioRepositoryMock->expects($this->once())
             ->method('findHorariosByParadaSublineaDireccion')
