@@ -64,7 +64,11 @@ class HorarioRepository extends ServiceEntityRepository
 
     public function findHorariosByParadaSublinea($idParada, $idSublinea)
     {
-     $query = $this->em->createQuery("SELECT DISTINCT ho.id, ho.hora, ho.tipo FROM App\Entity\Horario ho JOIN ho.sublineasParadasHorarios sub JOIN sub.parada pa JOIN sub.sublinea sl WHERE pa.id = ?1 and sl.id = ?2");
+     $query = $this->em->createQuery("SELECT DISTINCT ho.id, ho.hora, ho.tipo FROM App\Entity\Horario ho 
+                                    JOIN ho.sublineasParadasHorarios sub 
+                                    JOIN sub.parada pa 
+                                    JOIN sub.sublinea sl 
+                                    WHERE pa.id = ?1 and sl.id = ?2");
      $query->setParameter(1, $idParada);
      $query->setParameter(2, $idSublinea);
      return $query->getResult();

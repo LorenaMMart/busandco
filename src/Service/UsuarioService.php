@@ -97,7 +97,7 @@ class UsuarioService{
                 foreach($direccionesSublinea as $direccionSublinea){
                     if($direccionSublinea && count($direccionSublinea)>0){
 
-                        $paradasDireccion = $this->em->getRepository(Parada::class)->findParadasByDireccion($direccionSublinea['direccion']);
+                        $paradasDireccion = $this->em->getRepository(Parada::class)->findParadasByDireccionSublinea($direccionSublinea['direccion'], $sublineaBusqueda->getId());
                     
                         //Recorremos las paradas y recuperamos los Horarios y el orden
                         foreach($paradasDireccion as $paradaDireccion){

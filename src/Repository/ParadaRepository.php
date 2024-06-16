@@ -67,10 +67,11 @@ class ParadaRepository extends ServiceEntityRepository
      return $query->getResult();
     }
     
-    public function findParadasByDireccion($direccion)
+    public function findParadasByDireccionSublinea($direccion, $idSublinea)
     {
-     $query = $this->em->createQuery("SELECT DISTINCT pa FROM App\Entity\Parada pa JOIN pa.sublineasParadasHorarios sub JOIN sub.sublinea sl WHERE sub.direccion =?1");
+     $query = $this->em->createQuery("SELECT DISTINCT pa FROM App\Entity\Parada pa JOIN pa.sublineasParadasHorarios sub JOIN sub.sublinea sl WHERE sub.direccion =?1 and sl.id=?2");
      $query->setParameter(1, $direccion);
+     $query->setParameter(2, $idSublinea);
      return $query->getResult();
     }
 }

@@ -201,8 +201,7 @@ class AdminService{
             $entityManager->flush();
             return ["mensaje" => "La linea con id " . $linea->getId() . " ha sido recuperada"];
         }
-    }
-      
+    }      
 }
 
 ?>

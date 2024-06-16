@@ -17,7 +17,9 @@ class CabeceraLineaDto
         
     }
 
-    static function of(int $idLinea, string $nombreLinea, array $sublineas, array $direccion, string $empresa, array $coordenadas): CabeceraLineaDto{
+    static function of(int $idLinea, string $nombreLinea, array $sublineas, 
+    array $direccion, string $empresa, array $coordenadas): CabeceraLineaDto
+    {
         $data = new CabeceraLineaDto();
         $data->setIdLinea($idLinea);
         $data->setNombreLinea($nombreLinea);
